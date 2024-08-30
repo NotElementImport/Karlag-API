@@ -237,6 +237,143 @@
                     }
                 }
             }
+        },
+        "/api/v1/price": {
+            "get": {
+                "tags": [ "Прайслист" ],
+                "summary": "Получить Прайслист",
+                "description": "Два режима работы: С авторизацией (отключено кэширование), и без авторизации",
+                "security": [{ "api_key": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Успешно",
+                        "content": {
+                            "application/json": {
+                                "example": [
+                                    {
+                                        "discount": 0,
+                                        "price": 0,
+                                        "tags": [
+                                            "string"
+                                        ],
+                                        "comment": "string",
+                                        "final_price": 0
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [ "Прайслист" ],
+                "summary": "Создать Прайс",
+                "security": [{ "api_key": [] }],
+                "requestBody": {
+                    "content": {
+                        "application/api": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "price": { "type": "number" },
+                                    "tags": { "type": "array", "items": { "type": "string" } },
+                                    "discount": { "type": "number" },
+                                    "comment": { "type": "string" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Created"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/price/{id}": {
+            "post": {
+                "tags": [ "Прайслист" ],
+                "summary": "Обновить Прайс",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "in": "path", "description": "", "schema": { "type": "number" }, "required": true }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/api": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "price": { "type": "number" },
+                                    "tags": { "type": "array", "items": { "type": "string" } },
+                                    "discount": { "type": "number" },
+                                    "comment": { "type": "string" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Обновить",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Updated"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [ "Прайслист" ],
+                "summary": "Архивировать Прайс",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "in": "path", "description": "", "schema": { "type": "number" }, "required": true }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Ok, price $id delete"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [ "Прайслист" ],
+                "summary": "Восстановить Прайс",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "in": "path", "description": "", "schema": { "type": "number" }, "required": true }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Ok, price $id revert"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

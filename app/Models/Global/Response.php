@@ -27,7 +27,7 @@ class Response
     }
 
     public static function json(&$object) {
-        return response($object->toArray());
+        return response()->json(is_array($object) ? $object : $object->toArray());
     }
 
     public static function forbiden($message) {
