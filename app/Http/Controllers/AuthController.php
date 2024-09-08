@@ -24,7 +24,7 @@ class AuthController extends Controller
         }
 
         // Getting props:
-        [$login, $password] = [$request->get('login'), $request->get('password')];
+        [$login, $password] = [$request->input('login'), $request->input('password')];
 
         // Validate prop data:
         /** @var User|null */
@@ -33,6 +33,7 @@ class AuthController extends Controller
         if(is_null($user) || !Hash::check($password, $user->password)) {
             return Response::badRequest('The provided credentials are incorrect');
         }
+
         $response = [ 'token' => $user->createToken($login)->plainTextToken, 'id' => $user->id ];
         return Response::json($response);
     }
