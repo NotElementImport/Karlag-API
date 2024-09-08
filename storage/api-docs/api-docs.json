@@ -8,7 +8,7 @@
         "securitySchemes": {
             "api_key": {
                 "name": "Authorization",
-                "type": "Baerer",
+                "type": "apiKey",
                 "in": "header"
             }
         }
