@@ -24,7 +24,7 @@ services:
         depends_on:
             -  db_app
         ports:
-            - "9000:9000"
+            - "9000"
         networks:
             - internal
             
