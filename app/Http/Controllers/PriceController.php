@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Global\Language;
 use App\Models\Global\Response;
 use App\Models\Global\Tags;
 use App\Models\Price;
@@ -15,7 +16,9 @@ class PriceController extends Controller
     {
         // User mode:
         if(!auth('sanctum')->check()) {
-            $items = Cache::rememberForever('price-all', function () {
+            $lang = Language::capture();
+
+            $items = Cache::rememberForever("price-all-$lang", function () {
                 return Price::where('delete', '0')
                     ->orderBy('index_order','asc')
                     ->with('author')
@@ -43,6 +46,8 @@ class PriceController extends Controller
         $validate = Validator::make(
             $request->all(),    
             [
+                'title_ru' => 'required',
+                'title_kk' => 'required',
                 'price' => 'required',
                 'tags' => 'required|array',
             ]);
@@ -52,6 +57,8 @@ class PriceController extends Controller
         }
 
         $post = new Price([
+            'title_ru' => $request->title_ru,
+            'title_kk' => $request->title_kk,
             'author_id' => $request->user()->id,
             'price' => $request->price,
             'discount' => $request->get('discount', 0),
@@ -65,7 +72,9 @@ class PriceController extends Controller
             return Response::internalServerError("Ops something wrong while saving");
         }
 
-        Cache::forget('price-all');
+        Cache::forget('price-all-kk');
+        Cache::forget('price-all-ru');
+
         return Response::created('Created');
     }
 
@@ -75,6 +84,13 @@ class PriceController extends Controller
 
         if(is_null($item)) {
             return Response::notFound("Price $id not found");
+        }
+
+        if($request->has('title_ru')) {
+            $item->title_ru = $request->title_ru;
+        }
+        if($request->has('title_kk')) {
+            $item->title_ru = $request->title_kk;
         }
 
         if($request->has('price')) {
@@ -101,7 +117,9 @@ class PriceController extends Controller
             return Response::internalServerError("Ops something wrong while saving");
         }
 
-        Cache::forget('price-all');
+        Cache::forget('price-all-kk');
+        Cache::forget('price-all-ru');
+
         return Response::accepted("Updated");
     }
 
@@ -116,7 +134,9 @@ class PriceController extends Controller
         $item->delete = 1;
         $item->save();
 
-        Cache::forget('price-all');
+        Cache::forget('price-all-ru');
+        Cache::forget('price-all-kk');
+
         return Response::accepted("Ok, price $id delete");
     }
 
@@ -131,7 +151,9 @@ class PriceController extends Controller
         $item->delete = 0;
         $item->save();
 
-        Cache::forget('price-all');
+        Cache::forget('price-all-ru');
+        Cache::forget('price-all-kk');
+
         return Response::accepted("Ok, price $id revert");
     }
 }

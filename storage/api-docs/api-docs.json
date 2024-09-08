@@ -244,6 +244,9 @@
                 "summary": "Получить Прайслист",
                 "description": "Два режима работы: С авторизацией (отключено кэширование), и без авторизации",
                 "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } }
+                ],
                 "responses": {
                     "200": {
                         "description": "Успешно",
@@ -253,6 +256,7 @@
                                     {
                                         "discount": 0,
                                         "price": 0,
+                                        "title": "",
                                         "tags": [
                                             "string"
                                         ],
@@ -271,10 +275,12 @@
                 "security": [{ "api_key": [] }],
                 "requestBody": {
                     "content": {
-                        "application/api": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
+                                    "title_ru": { "type": "string" },
+                                    "title_kk": { "type": "string" },
                                     "price": { "type": "number" },
                                     "tags": { "type": "array", "items": { "type": "string" } },
                                     "discount": { "type": "number" },
@@ -308,10 +314,12 @@
                 ],
                 "requestBody": {
                     "content": {
-                        "application/api": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
+                                    "title_ru": { "type": "string" },
+                                    "title_kk": { "type": "string" },
                                     "price": { "type": "number" },
                                     "tags": { "type": "array", "items": { "type": "string" } },
                                     "discount": { "type": "number" },

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\Global\Tags;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\Global\Language;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Global\Tags;
 
 /**
  * @property int $index_order
@@ -20,12 +20,14 @@ class Price extends Model
 {
     use HasFactory;
 
-    protected $appends = ['final_price'];
+    protected $appends = ['final_price', 'title'];
 
     protected $fillable = [
         'index_order',
         'price',
         'discount',
+        'title_ru',
+        'title_kk',
         'tags',
         'comment',
         'author_id',
@@ -33,11 +35,16 @@ class Price extends Model
     ];
 
     protected $hidden = [
-        'author_id'
+        'author_id', 'title_ru', 'title_kk'
     ];
 
     protected function getFinalPriceAttribute() {
         return $this->price * (1 - $this->discount * 0.01);
+    }
+
+    protected function getTitleAttribute() {
+        $lang = Language::capture();
+        return $this->{ "title_$lang" };
     }
 
     public static function preparePrice(&$price) {
@@ -50,8 +57,7 @@ class Price extends Model
         return $price;
     }
 
-    public function author()
-    {
+    public function author() {
         return $this->hasOne(User::class, 'id', 'author_id')->select(['id', 'name', 'email']);
     }
 }
