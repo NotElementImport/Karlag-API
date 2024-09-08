@@ -7,8 +7,8 @@
     "components": {
         "securitySchemes": {
             "api_key": {
-                "name": "api_key",
-                "type": "apiKey",
+                "name": "Authorization",
+                "type": "Baerer",
                 "in": "header"
             }
         }
