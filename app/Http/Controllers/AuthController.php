@@ -31,9 +31,9 @@ class AuthController extends Controller
         $user = User::where('name', $login)->first();
 
         if(is_null($user) || !Hash::check($password, $user->password)) {
-            return response([ 'message' => 'The provided credentials are incorrect' ], 403);
+            return Response::badRequest('The provided credentials are incorrect');
         }
-
-        return response([ 'token' => $user->createToken($login)->plainTextToken, 'id' => $user->id ]);
+        $response = [ 'token' => $user->createToken($login)->plainTextToken, 'id' => $user->id ];
+        return Response::json($response);
     }
 }
