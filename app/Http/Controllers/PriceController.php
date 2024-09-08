@@ -6,6 +6,7 @@ use App\Models\Global\Language;
 use App\Models\Global\Response;
 use App\Models\Global\Tags;
 use App\Models\Price;
+use App\Models\PriceGroup;
 use Illuminate\Http\Request;
 use Validator;
 use Cache;
@@ -19,12 +20,18 @@ class PriceController extends Controller
             $lang = Language::capture();
 
             $items = Cache::rememberForever("price-all-$lang", function () {
-                return Price::where('delete', '0')
-                    ->orderBy('index_order','asc')
-                    ->with('author')
+                return PriceGroup::where('delete', '0')
+                    ->orderBy('price_groups.order_index','asc')
+                    ->with('prices')
                     ->get()
-                    ->makeHidden(['id', 'author', 'created_at', 'updated_at', 'delete', 'index_order'])
-                    ->map(fn ($item) => Price::preparePrice($item))
+                    ->makeHidden(['id', 'delete', 'order_index', 'title_kk', 'title_ru'])
+                    ->map(function ($item) {
+                        foreach ($item->prices as &$price) {
+                            $price = Price::preparePrice($price);
+                            $price->makeHidden(['price_group_id', 'title_ru', 'title_kk', 'created_at', 'updated_at', 'delete', 'index_order', 'id', 'author', 'comment']);
+                        }
+                        return $item;
+                    })
                     ->toArray();
             });
     
@@ -46,10 +53,10 @@ class PriceController extends Controller
         $validate = Validator::make(
             $request->all(),    
             [
+                'group_id' => 'required',
                 'title_ru' => 'required',
                 'title_kk' => 'required',
                 'price' => 'required',
-                'tags' => 'required|array',
             ]);
 
         if($validate->fails()) {
@@ -57,12 +64,13 @@ class PriceController extends Controller
         }
 
         $post = new Price([
+            'price_group_id' => $request->group_id,
             'title_ru' => $request->title_ru,
             'title_kk' => $request->title_kk,
             'author_id' => $request->user()->id,
             'price' => $request->price,
             'discount' => $request->get('discount', 0),
-            'tags' => Tags::toString($request->tags),
+            'tags' => Tags::toString($request->get('tags', [])),
             'index_order' => $request->get('index_order', 0),
             'comment' => $request->get('comment', ''),
             'delete' => 0
@@ -84,6 +92,10 @@ class PriceController extends Controller
 
         if(is_null($item)) {
             return Response::notFound("Price $id not found");
+        }
+
+        if($request->has('group_id')) {
+            $item->price_group_id = $request->group_id;
         }
 
         if($request->has('title_ru')) {

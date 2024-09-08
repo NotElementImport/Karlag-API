@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PriceController;
+use App\Http\Controllers\PriceGroupController;
 use App\Http\Middleware\WithToken;
 use Illuminate\Support\Facades\Route;
 
@@ -31,11 +32,24 @@ Route::prefix('api/v1')->group(function() {
         // With Token:
         Route::middleware(WithToken::class)->group(function() {
             Route::post('', [PriceController::class, 'store']);
+            Route::post('batch', [PriceGroupController::class, 'batchStore']);
             Route::delete('/{id}', [PriceController::class, 'destroy']);
             Route::patch('/{id}', [PriceController::class, 'revert']);
             Route::post('/{id}', [PriceController::class, 'update']);
         });
 
         Route::get('', [PriceController::class, 'index']);
+    });
+
+    // Price Group:
+    Route::prefix('price-group')->group(function() {
+        // With Token:
+        Route::middleware(WithToken::class)->group(function() {
+            Route::get('', [PriceGroupController::class, 'index']);
+            Route::post('', [PriceGroupController::class, 'store']);
+            Route::delete('/{id}', [PriceGroupController::class, 'destroy']);
+            Route::patch('/{id}', [PriceGroupController::class, 'revert']);
+            Route::post('/{id}', [PriceController::class, 'update']);
+        });
     });
 });

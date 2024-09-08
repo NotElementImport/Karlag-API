@@ -270,8 +270,8 @@
                 }
             },
             "post": {
-                "tags": [ "Прайслист" ],
-                "summary": "Создать Прайс",
+                "tags": [ "Цена" ],
+                "summary": "Указать цену",
                 "security": [{ "api_key": [] }],
                 "requestBody": {
                     "content": {
@@ -279,6 +279,7 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
+                                    "group_id": { "type": "number" },
                                     "title_ru": { "type": "string" },
                                     "title_kk": { "type": "string" },
                                     "price": { "type": "number" },
@@ -306,8 +307,8 @@
         },
         "/api/v1/price/{id}": {
             "post": {
-                "tags": [ "Прайслист" ],
-                "summary": "Обновить Прайс",
+                "tags": [ "Цена" ],
+                "summary": "Обновить цену",
                 "security": [{ "api_key": [] }],
                 "parameters": [
                     { "name": "id", "in": "path", "description": "", "schema": { "type": "number" }, "required": true }
@@ -318,6 +319,7 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
+                                    "group_id": { "type": "number" },
                                     "title_ru": { "type": "string" },
                                     "title_kk": { "type": "string" },
                                     "price": { "type": "number" },
@@ -343,7 +345,7 @@
                 }
             },
             "delete": {
-                "tags": [ "Прайслист" ],
+                "tags": [ "Цена" ],
                 "summary": "Архивировать Прайс",
                 "security": [{ "api_key": [] }],
                 "parameters": [
@@ -363,7 +365,7 @@
                 }
             },
             "patch": {
-                "tags": [ "Прайслист" ],
+                "tags": [ "Цена" ],
                 "summary": "Восстановить Прайс",
                 "security": [{ "api_key": [] }],
                 "parameters": [
@@ -376,6 +378,184 @@
                             "application/json": {
                                 "example": {
                                     "message": "Ok, price $id revert"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/price/batch": {
+            "post": {
+                "tags": [ "Группа для Прайслиста" ],
+                "summary": "Создать Группу и Прайс к группе",
+                "security": [{ "api_key": [] }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title_ru": { "type": "string" },
+                                    "title_kk": { "type": "string" },
+                                    "prices": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "title_ru": { "type": "string" },
+                                                "title_kk": { "type": "string" },
+                                                "price": { "type": "number" },
+                                                "tags": { "type": "array", "items": { "type": "string" } },
+                                                "discount": { "type": "number" },
+                                                "comment": { "type": "string" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Created"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/price-group": {
+            "get": {
+                "tags": [ "Группа для Прайслиста" ],
+                "summary": "Получить Группы",
+                "security": [{ "api_key": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Успешно",
+                        "content": {
+                            "application/json": {
+                                "example": [
+                                    {
+                                        "id": 0,
+                                        "title_ru": "",
+                                        "title_kk": "",
+                                        "order_index": 0,
+                                        "delete": 0
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [ "Группа для Прайслиста" ],
+                "summary": "Создать группу",
+                "security": [{ "api_key": [] }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title_ru": { "type": "string" },
+                                    "title_kk": { "type": "string" },
+                                    "order_index": { "type": "number" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Created"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/price-group/{id}": {
+            "post": {
+                "tags": [ "Группа для Прайслиста" ],
+                "summary": "Обновить группу",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "in": "path", "description": "", "schema": { "type": "number" }, "required": true }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title_ru": { "type": "string" },
+                                    "title_kk": { "type": "string" },
+                                    "order_index": { "type": "number" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Обновить",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Updated"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [ "Группа для Прайслиста" ],
+                "summary": "Архивировать группу",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "in": "path", "description": "", "schema": { "type": "number" }, "required": true }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Ok, price group $id delete"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [ "Группа для Прайслиста" ],
+                "summary": "Восстановить группу",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "in": "path", "description": "", "schema": { "type": "number" }, "required": true }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Ok, price group $id revert"
                                 }
                             }
                         }

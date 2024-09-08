@@ -23,6 +23,7 @@ class Price extends Model
     protected $appends = ['final_price', 'title'];
 
     protected $fillable = [
+        'price_group_id',
         'index_order',
         'price',
         'discount',
@@ -35,7 +36,7 @@ class Price extends Model
     ];
 
     protected $hidden = [
-        'author_id', 'title_ru', 'title_kk'
+        'author_id'
     ];
 
     protected function getFinalPriceAttribute() {
