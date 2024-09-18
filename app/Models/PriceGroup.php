@@ -11,6 +11,8 @@ class PriceGroup extends Model
 {
     use HasFactory;
 
+    protected $table = 'price_groups';
+
     protected $appends = ['title'];
 
     protected $fillable = [
@@ -22,13 +24,18 @@ class PriceGroup extends Model
 
     public $timestamps = false;
 
+    // Custom Attributes:
+
     protected function getTitleAttribute() {
-        $lang = Language::capture();
-        return $this->{ "title_$lang" };
+        return $this->{ "title_".Language::capture() } 
+            ?? $this->attributes()['title_ru'];
     }
+
+    // Relations:
 
     public function prices(): HasMany
     {
-        return $this->hasMany(Price::class);
+        return $this->hasMany(Price::class, 'price_group_id')
+            ->where(['prices.delete' => 0]);
     }
 }

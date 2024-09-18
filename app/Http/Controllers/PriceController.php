@@ -7,66 +7,78 @@ use App\Models\Global\Response;
 use App\Models\Global\Tags;
 use App\Models\Price;
 use App\Models\PriceGroup;
+use App\Models\PriceSearch;
 use Illuminate\Http\Request;
+use Illuminate\Validation\UnauthorizedException;
 use Validator;
 use Cache;
+use Str;
 
 class PriceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // User mode:
-        if(!auth('sanctum')->check()) {
-            $lang = Language::capture();
+        auth('sanctum')->check()
+            ?: abort(401, 'Unathorized');
 
-            $items = Cache::rememberForever("price-all-$lang", function () {
-                return PriceGroup::where('delete', '0')
-                    ->orderBy('price_groups.order_index','asc')
-                    ->with('prices')
-                    ->get()
-                    ->makeHidden(['id', 'delete', 'order_index', 'title_kk', 'title_ru'])
-                    ->map(function ($item) {
-                        foreach ($item->prices as &$price) {
-                            $price = Price::preparePrice($price);
-                            $price->makeHidden(['price_group_id', 'title_ru', 'title_kk', 'created_at', 'updated_at', 'delete', 'index_order', 'id', 'author', 'comment']);
-                        }
-                        return $item;
-                    })
-                    ->toArray();
-            });
-    
-            return Response::json($items);
-        }
+        $items = PriceSearch::search($request->all());
 
-        // Admin Mode:
-        $items = Price::select('*')
-            ->orderBy('created_at','desc')
-            ->with('author')
-            ->get()
-            ->map(fn ($item) => Price::preparePrice($item));
+        return response()->json([ 
+            'items' => $items->items(),
+            'meta' => [
+                'size'    => $items->total(),
+                'perpage' => $items->perPage(),
+                'page'    => $items->currentPage()
+            ]
+        ]);
+    }
 
-        return Response::json($items);
+    public function cached() 
+    {
+        $lang = Language::capture();
+
+        $items = Cache::rememberForever("price-all-$lang", function () {
+            return PriceGroup::where('delete', '0')
+                ->orderBy('price_groups.order_index','asc')
+                ->with('prices')
+                ->get()
+                ->makeHidden(['id', 'delete', 'order_index', 'title_kk', 'title_ru'])
+                ->map(function ($item) {
+                    $cortage = [];
+                    foreach ($item->prices as &$price) {
+                        $price->makeHidden(['price_group_id', 'title_ru', 'title_kk', 'created_at', 'updated_at', 'delete', 'index_order', 'id', 'author', 'comment']);
+                        $cortage[Str::slug($price->title_ru)] = $price;
+                    }
+                    $item->setAttribute('childs', $cortage);
+                    $item->makeHidden([ 'prices' ]);
+                    return $item;
+                })
+                ->toArray();
+        });
+
+        return response()->json($items);
     }
 
     public function store(Request $request)
     {
+        auth('sanctum')->check()
+            ?: abort(401, 'Unathorized');
+
         $validate = Validator::make(
             $request->all(),    
             [
                 'group_id' => 'required',
                 'title_ru' => 'required',
-                'title_kk' => 'required',
                 'price' => 'required',
             ]);
 
-        if($validate->fails()) {
-            return Response::badRequest($validate->errors()->toArray());
-        }
+        $validate->fails()
+            ?: abort(400, $validate->errors()->toArray());
 
-        $post = new Price([
+        $price = new Price([
             'price_group_id' => $request->group_id,
             'title_ru' => $request->title_ru,
-            'title_kk' => $request->title_kk,
+            'title_kk' => $request->get('title_kk', null),
             'author_id' => $request->user()->id,
             'price' => $request->price,
             'discount' => $request->get('discount', 0),
@@ -76,72 +88,42 @@ class PriceController extends Controller
             'delete' => 0
         ]);
 
-        if(!$post->save()) {
-            return Response::internalServerError("Ops something wrong while saving");
-        }
-
         Cache::forget('price-all-kk');
         Cache::forget('price-all-ru');
 
-        return Response::created('Created');
+        return $price->save()
+            ? Response::created('Created')
+            : abort(500, "Ops something wrong while saving");
     }
 
     public function update(Request $request, string $id)
     {
-        $item = Price::where("id", $id)->first();
+        auth('sanctum')->check()
+            ?: abort(401, 'Unathorized');
 
-        if(is_null($item)) {
-            return Response::notFound("Price $id not found");
-        }
+        /** @var Price $item */
+        $price = Price::where("id", $id)
+            ->first() 
+            ?? abort(404, "Price $id not found");
 
-        if($request->has('group_id')) {
-            $item->price_group_id = $request->group_id;
-        }
+        $price->fill( $request->post() );
 
-        if($request->has('title_ru')) {
-            $item->title_ru = $request->title_ru;
-        }
-        if($request->has('title_kk')) {
-            $item->title_ru = $request->title_kk;
-        }
-
-        if($request->has('price')) {
-            $item->price = $request->price;
-        }
-
-        if($request->has('discount')) {
-            $item->discount = $request->discount;
-        }
-
-        if($request->has('tags')) {
-            $item->tags = Tags::toString($request->tags);
-        }
-
-        if($request->has('index_order')) {
-            $item->index_order = $request->index_order;
-        }
-
-        if($request->has('comment')) {
-            $item->comment = $request->comment;
-        }
-
-        if(!$item->save()) {
-            return Response::internalServerError("Ops something wrong while saving");
-        }
+        if($request->has('tags'))
+            $price->tags = Tags::toString($request->tags);
 
         Cache::forget('price-all-kk');
         Cache::forget('price-all-ru');
 
-        return Response::accepted("Updated");
+        return 
+            $price->save()
+                ? Response::accepted("Updated")
+                : abort(500, "Ops something wrong while saving");
     }
 
     public function destroy(string $id)
     {
-        $item = Price::where('id', $id)->first();
-
-        if(is_null($item)) {
-            return Response::notFound("Price $id not found");
-        }
+        $item = Price::where('id', $id)->first()
+            ?? abort(404, "Price $id not found");
 
         $item->delete = 1;
         $item->save();
@@ -154,11 +136,8 @@ class PriceController extends Controller
 
     public function revert(string $id)
     {
-        $item = Price::where('id', $id)->first();
-
-        if(is_null($item)) {
-            return Response::notFound("Price $id not found");
-        }
+        $item = Price::where('id', $id)->first()
+            ?? abort(404, "Price $id not found");
 
         $item->delete = 0;
         $item->save();

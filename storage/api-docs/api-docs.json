@@ -52,17 +52,18 @@
         "/api/v1/post": {
             "get": {
                 "tags": ["Статьи"],
-                "summary": "Получить все статьи",
+                "summary": "Получить все статьи (Для сайта и админки)",
                 "description": "Два режима работы: С авторизацией (отключено кэширование), и без авторизации",
                 "security": [{ "api_key": [] }],
                 "parameters": [
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } },
                     { "name": "page", "in": "query", "schema": { "default": 0, "type": "string" } },
-                    { "name": "sort[id]", "description": "Доступно: asc/desc. Так-же можно менять поле сортировки sort[slug] как пример", "in": "query", "schema": { "type": "string", "enum": [ "asc", "desc" ]} },
+                    { "name": "perpage", "in": "query", "schema": { "default": 15, "type": "string" } },
+                    { "name": "sort", "in": "query", "schema": { "type": "string", "enum": [ "-id", "id", "-created_at", "created_at", "title_ru", "-title_ru", "slug", "-slug" ]} },
                     { "name": "tag", "in": "query", "description": "Фильтр тэгов, в скобках указывается index из массива тэгов в поиске", "schema": { "type": "array" } },
                     { "name": "title", "in": "query", "description": "Поиск по названию", "schema": { "type": "string" } },
                     { "name": "content", "in": "query", "description": "Поиск по контенту", "schema": { "type": "string" } },
-                    { "name": "start_created_at", "in": "query", "description": "Создан от", "schema": { "type": "string" } },
-                    { "name": "end_created_at", "in": "query", "description": "Создан до", "schema": { "type": "string" } }
+                    { "name": "created_at", "in": "query", "schema": { "type": "string" } }
                 ],
                 "responses": {
                     "200": {
@@ -71,15 +72,23 @@
                             "application/json": {
                                 "example": {
                                     "items": [{
+                                        "id": 0,
                                         "slug": "string",
-                                        "title": "string",
-                                        "content": "string",
-                                        "tags": ["string"],
+                                        "title_ru": "string",
+                                        "content_ru": "string",
+                                        "tags": [
+                                            "string"
+                                        ],
                                         "created_at": "string",
                                         "updated_at": "string",
                                         "imgsrc": "string",
                                         "delete": 0,
+                                        "title_kk": "string",
+                                        "content_kk": "string",
+                                        "title": "string",
+                                        "content": "string",
                                         "author": {
+                                            "id": 0,
                                             "name": "string",
                                             "email": "string"
                                         }
@@ -106,8 +115,10 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
-                                    "title": { "type": "string" },
-                                    "content": { "type": "string" },
+                                    "title_ru": { "type": "string" },
+                                    "title_kk": { "type": "string" },
+                                    "content_ru": { "type": "string" },
+                                    "content_kk": { "type": "string" },
                                     "tags": { "type": "array", "items": { "type": "string" } },
                                     "photo": { "type": "string", "format": "binary" }
                                 }
@@ -135,6 +146,7 @@
                 "summary": "Получить статью",
                 "description": "Два режима работы: С авторизацией (больше информации), и без авторизации",
                 "parameters": [
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } },
                     { "name": "slug", "required": true, "description": "Получить статью по slug-у", "in": "path", "schema": { "type": "string"}}
                 ],
                 "responses": {
@@ -143,15 +155,23 @@
                         "content": {
                             "application/json": {
                                 "example": {
+                                    "id": 0,
                                     "slug": "string",
-                                    "title": "string",
-                                    "content": "string",
-                                    "tags": ["string"],
+                                    "title_ru": "string",
+                                    "content_ru": "string",
+                                    "tags": [
+                                        "string"
+                                    ],
                                     "created_at": "string",
                                     "updated_at": "string",
                                     "imgsrc": "string",
                                     "delete": 0,
+                                    "title_kk": "string",
+                                    "content_kk": "string",
+                                    "title": "string",
+                                    "content": "string",
                                     "author": {
+                                        "id": 0,
                                         "name": "string",
                                         "email": "string"
                                     }
@@ -175,8 +195,10 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
-                                    "title": { "type": "string" },
-                                    "content": { "type": "string" },
+                                    "title_ru": { "type": "string" },
+                                    "title_kk": { "type": "string" },
+                                    "content_ru": { "type": "string" },
+                                    "content_kk": { "type": "string" },
                                     "tags": { "type": "array", "items": { "type": "string" } },
                                     "photo": { "type": "string", "format": "binary" }
                                 }
@@ -201,6 +223,7 @@
                 "tags": ["Статьи"],
                 "summary": "Архивировать статью",
                 "description": "",
+                "security": [{ "api_key": [] }],
                 "parameters": [
                     { "name": "slug", "required": true, "in": "path", "schema": { "type": "string" }}
                 ],
@@ -221,6 +244,7 @@
                 "tags": ["Статьи"],
                 "summary": "Восстановить статью",
                 "description": "",
+                "security": [{ "api_key": [] }],
                 "parameters": [
                     { "name": "slug", "required": true, "in": "path", "schema": { "type": "string" }}
                 ],
@@ -238,12 +262,11 @@
                 }
             }
         },
-        "/api/v1/price": {
+        "/api/v1/price-list": {
             "get": {
                 "tags": [ "Прайслист" ],
                 "summary": "Получить Прайслист",
                 "description": "Два режима работы: С авторизацией (отключено кэширование), и без авторизации",
-                "security": [{ "api_key": [] }],
                 "parameters": [
                     { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } }
                 ],
@@ -254,16 +277,77 @@
                             "application/json": {
                                 "example": [
                                     {
-                                        "discount": 0,
-                                        "price": 0,
-                                        "title": "",
-                                        "tags": [
-                                            "string"
-                                        ],
-                                        "comment": "string",
-                                        "final_price": 0
+                                        "title": "group title",
+                                        "prices": {
+                                            "price-string": {
+                                                "price": 0,
+                                                "discount": 0,
+                                                "tags": [ "string" ],
+                                                "final_price": 0,
+                                                "title": "price string"
+                                            }
+                                        }
                                     }
                                 ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/price": {
+            "get": {
+                "tags": [ "Цена" ],
+                "summary": "Получить цены",
+                "description": "Два режима работы: С авторизацией (отключено кэширование), и без авторизации",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "items": [
+                                        {
+                                            "id": 0,
+                                            "index_order": 0,
+                                            "price": 0,
+                                            "discount": 0,
+                                            "tags": [ "string" ],
+                                            "comment": "string",
+                                            "delete": 0,
+                                            "created_at": "string",
+                                            "updated_at": "string",
+                                            "title_ru": "string",
+                                            "title_kk": "string",
+                                            "price_group_id": 0,
+                                            "final_price": 0,
+                                            "title": "string",
+                                            "group": {
+                                                "id": 0,
+                                                "title_ru": "string",
+                                                "title_kk": "string",
+                                                "order_index": 0,
+                                                "delete": 0,
+                                                "title": "string"
+                                            },
+                                            "author": {
+                                                "id": 0,
+                                                "name": "string",
+                                                "email": "string"
+                                            }
+                                        }
+                                    ],
+                                    "meta": {
+                                        "size": 2,
+                                        "perpage": 15,
+                                        "page": 1
+                                    }
+                                }
+                                
                             }
                         }
                     }
@@ -435,21 +519,37 @@
             "get": {
                 "tags": [ "Группа для Прайслиста" ],
                 "summary": "Получить Группы",
+                "parameters": [
+                    { "name": "page", "in": "query", "schema": { "default": 0, "type": "string" } },
+                    { "name": "sort", "in": "query", "schema": { "type": "string", "enum": [ "-id", "id", "-created_at", "created_at", "title_ru", "-title_ru" ]} },
+                    { "name": "childs", "in": "query", "description": "Отображение дочерних элементов", "schema": { "type": "string" } },
+                    { "name": "title", "in": "query", "description": "Поиск по названию", "schema": { "type": "string" } }
+                ],
                 "security": [{ "api_key": [] }],
                 "responses": {
                     "200": {
                         "description": "Успешно",
                         "content": {
                             "application/json": {
-                                "example": [
-                                    {
-                                        "id": 0,
-                                        "title_ru": "",
-                                        "title_kk": "",
-                                        "order_index": 0,
-                                        "delete": 0
+                                "example": {
+                                    "items": [
+                                        {
+                                            "id": 0,
+                                            "title_ru": "",
+                                            "title_kk": "",
+                                            "order_index": 0,
+                                            "delete": 0,
+                                            "childs": {
+                                                "name": { "data": "any" }
+                                            }
+                                        }
+                                    ],
+                                    "meta": {
+                                        "size": 2,
+                                        "perpage": 15,
+                                        "page": 1
                                     }
-                                ]
+                                }
                             }
                         }
                     }

@@ -20,7 +20,9 @@ class Price extends Model
 {
     use HasFactory;
 
-    protected $appends = ['final_price', 'title'];
+    protected $table = 'prices';
+
+    protected $appends = ['final_price', 'title', 'tags'];
 
     protected $fillable = [
         'price_group_id',
@@ -39,26 +41,28 @@ class Price extends Model
         'author_id'
     ];
 
+    // Custom Attributes:
+
     protected function getFinalPriceAttribute() {
         return $this->price * (1 - $this->discount * 0.01);
     }
 
     protected function getTitleAttribute() {
-        $lang = Language::capture();
-        return $this->{ "title_$lang" };
+        return $this->{ "title_".Language::capture() } 
+            ?? $this->attributes['title_ru'];
     }
 
-    public static function preparePrice(&$price) {
-        $price->tags = Tags::fromString($price->tags);
-
-        if(!is_null($price->author)) {
-            $price->author->makeHidden(['id']);
-        }
-
-        return $price;
+    protected function getTagsAttribute() {
+        return json_decode($this->attributes['tags']);
     }
+
+    // Relations:
 
     public function author() {
         return $this->hasOne(User::class, 'id', 'author_id')->select(['id', 'name', 'email']);
+    }
+
+    public function group() {
+        return $this->hasOne(PriceGroup::class, 'id', 'price_group_id');
     }
 }

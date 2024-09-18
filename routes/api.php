@@ -27,6 +27,8 @@ Route::prefix('api/v1')->group(function() {
         Route::get('', [PostController::class, 'index']);
     });
 
+    Route::get('price-list', [PriceController::class, 'cached']);
+
     // Price:
     Route::prefix('price')->group(function() {
         // With Token:

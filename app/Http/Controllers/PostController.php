@@ -6,6 +6,7 @@ use App\Models\Global\QueryFilter;
 use App\Models\Global\Response;
 use App\Models\Global\Tags;
 use App\Models\Post;
+use App\Models\PostSearch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Str;
@@ -15,63 +16,41 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
-        // Main Page:
-        if(sizeof($request->query) == 0) {
-            $size = 6;
+        $isAuthorized = auth('sanctum')->check();
+        $items = PostSearch::search($request->all(), $isAuthorized);
+    
+        $filteredItems =
+            !$isAuthorized
+                ? array_map(
+                    fn($item) => $item->makeHidden([ 'id', 'title_ru', 'title_kk', 'content_ru', 'content_kk', 'delete', 'updated_at' ]),
+                    $items->items()
+                ) // Site
+                : $items->items()
+                  // Admin
+        ;
 
-            $cachedPosts = Cache::rememberForever('post-all', function () use(&$size) {
-                return Post::where('delete', '0')
-                    ->orderBy('created_at','desc')
-                    ->limit($size)
-                    ->with('author')
-                    ->get()
-                    ->makeHidden(['id'])
-                    ->map(fn ($post) => Post::preparePost($post))
-                    ->toArray();
-            });
-
-            return Response::many($cachedPosts, sizeof($cachedPosts), $size, 1);
-        }
-        // Else :
-
-        // Page with All:
-        $posts = Post::select('*')
-            ->with('author');
-
-        // User mode: ? Not admin mode:
-        if(!auth('sanctum')->check()) {
-            $posts->where('delete', 0);
-        }
-
-        QueryFilter::apply($request,     $posts, 'title',      'text');
-        QueryFilter::apply($request,     $posts, 'content',    'text');
-        QueryFilter::apply($request,     $posts, 'tags',       'tag');
-        QueryFilter::apply($request,     $posts, 'created_at', 'range-date');
-        QueryFilter::applySort($request, $posts, 'created_at', 'desc');
-
-        $posts = $posts->paginate(15);
-
-        return Response::manyPaginate(
-            $posts, 
-            fn ($item) => Post::preparePost($item)->makeHidden(['id'])
-        );
+        return response()->json([ 
+            'items' => $filteredItems,
+            'meta' => [
+                'size'    => $items->total(),
+                'perpage' => $items->perPage(),
+                'page'    => $items->currentPage()
+            ]
+        ]);
     }
 
     public function show(string $slug)
     {
-        $post = Post::where('slug', $slug)
-            ->with('author')
-            ->first();
-
-        if(is_null($post)) {
-            return Response::notFound("Post $slug not found");
-        }
+        $post = Post::where('slug', $slug)->first()
+            ??  abort(404, "Post $slug not found");
 
         $post->makeHidden(['id']);
 
-        Post::preparePost($post);
+        if(!auth('sanctum')->check()) {
+            $post->makeHidden(['title_ru', 'title_kk', 'content_ru', 'content_kk', 'delete', 'slug', 'updated_at']);
+        }
 
-        return Response::json($post);
+        return response()->json($post);
     }
 
     public function store(Request $request)
