@@ -21,12 +21,12 @@ return new class extends Migration
             $table->foreignIdFor(PriceGroup::class);
         });
 
-        PriceGroup::factory()->create([
-            'title_ru' => '',
-            'title_kk' => '',
-            'order_index' => 0,
-            'delete' => 0
-        ]);
+        // PriceGroup::factory()->create([
+        //     'title_ru' => '',
+        //     'title_kk' => '',
+        //     'order_index' => 0,
+        //     'delete' => 0
+        // ]);
     }
 
     public function down(): void
