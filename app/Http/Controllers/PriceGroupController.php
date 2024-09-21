@@ -39,9 +39,10 @@ class PriceGroupController extends Controller
         return response()->json([ 
             'items' => $prepared,
             'meta' => [
-                'size'    => $items->total(),
-                'perpage' => $items->perPage(),
-                'page'    => $items->currentPage()
+                'size'     => $items->total(),
+                'lastpage' => $items->lastPage(),
+                'perpage'  => $items->perPage(),
+                'page'     => $items->currentPage()
             ]
         ]);
     }

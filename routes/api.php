@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\PriceGroupController;
@@ -11,6 +12,16 @@ Route::prefix('api/v1')->group(function() {
     // Auth:
     Route::prefix('auth')->group(function() {
         Route::post('login', [AuthController::class, 'login']);
+    });
+
+    // Files:
+    Route::prefix('files')->group(function() {
+        // With Token:
+        Route::middleware(WithToken::class)->group(function() {
+            Route::get('/list', [FileController::class, 'index']);
+            Route::post('/upload/images', [FileController::class, 'uploadImages']);
+            Route::post('/upload/documents', [FileController::class, 'uploadDocumets']);
+        });
     });
 
     // Post:

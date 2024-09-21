@@ -26,9 +26,10 @@ class PriceController extends Controller
         return response()->json([ 
             'items' => $items->items(),
             'meta' => [
-                'size'    => $items->total(),
-                'perpage' => $items->perPage(),
-                'page'    => $items->currentPage()
+                'size'     => $items->total(),
+                'lastpage' => $items->lastPage(),
+                'perpage'  => $items->perPage(),
+                'page'     => $items->currentPage()
             ]
         ]);
     }

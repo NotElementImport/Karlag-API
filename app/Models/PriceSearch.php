@@ -24,8 +24,11 @@ class PriceSearch extends Price
             $search->where('prices.price_group_id', '=', $params['price_group_id']);
 
         if(isset($params['title'])) {
-            $search->whereLike('prices.title_ru', $params['title']);
-            $search->whereLike('prices.title_kk', $params['title']);
+            $search->where(function ($query) use(&$params) {
+                $query->whereLike('prices.title_ru', $params['title'])
+                      ->orWhereLike('prices.title_kk', $params['title'])
+                      ->orWhereLike('prices.title_en', $params['title']);
+            });
         }
 
         if(isset($params['created_at'])) {

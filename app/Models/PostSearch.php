@@ -25,12 +25,18 @@ class PostSearch extends Post
             $search->whereLike('posts.slug', $params['slug']);
 
         if(isset($params['title'])) {
-            $search->whereLike('posts.title_ru', $params['title']);
-            $search->whereLike('posts.title_kk', $params['title']);
+            $search->where(function ($query) use(&$params) {
+                $query->whereLike('posts.title_ru', $params['title'])
+                      ->orWhereLike('posts.title_kk', $params['title'])
+                      ->orWhereLike('posts.title_en', $params['title']);
+            });
         }
         if(isset($params['content'])) {
-            $search->whereLike('posts.content_ru', $params['content']);
-            $search->whereLike('posts.content_kk', $params['content']);
+            $search->where(function ($query) use(&$params) {
+                $query->whereLike('posts.content_ru', $params['content'])
+                      ->orWhereLike('posts.content_kk', $params['content'])
+                      ->orWhereLike('posts.content_en', $params['content']);
+            });
         }
 
         if(isset($params['tag'])) {

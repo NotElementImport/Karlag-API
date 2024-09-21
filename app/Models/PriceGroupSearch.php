@@ -18,8 +18,11 @@ class PriceGroupSearch extends PriceGroup
             $search->where('price_groups.delete', '=', $params['delete']);
 
         if(isset($params['title'])) {
-            $search->whereLike('price_groups.title_ru', $params['title']);
-            $search->whereLike('price_groups.title_kk', $params['title']);
+            $search->where(function ($query) use(&$params) {
+                $query->whereLike('price_groups.title_ru', $params['title'])
+                      ->orWhereLike('price_groups.title_kk', $params['title'])
+                      ->orWhereLike('price_groups.title_en', $params['title']);
+            });
         }
 
         if(isset($params['sort']))

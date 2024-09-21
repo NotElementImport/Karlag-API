@@ -38,9 +38,10 @@ class PostController extends Controller
         return response()->json([ 
             'items' => $filteredItems,
             'meta' => [
-                'size'    => $items->total(),
-                'perpage' => $items->perPage(),
-                'page'    => $items->currentPage()
+                'size'     => $items->total(),
+                'lastpage' => $items->lastPage(),
+                'perpage'  => $items->perPage(),
+                'page'     => $items->currentPage()
             ]
         ]);
     }
@@ -86,10 +87,12 @@ class PostController extends Controller
             'slug' => $slug,
             'title_ru' => $request->title_ru,
             'title_kk' => $request->get('title_kk'),
+            'title_en' => $request->get('title_en'),
             'content_ru' => $request->content_ru,
             'content_kk' => $request->get('content_kk'),
+            'content_en' => $request->get('content_en'),
             'tags' => Tags::toString($request->tags),
-            'image_id' => $fileManager->uploadImage('photo', $slug)
+            'image_id' => $fileManager->uploadImage('photo', "post-$slug")
         ]);
 
         if(!$post->save()) {
@@ -109,13 +112,25 @@ class PostController extends Controller
             return Response::notFound("Post $slug not found");
         }
 
-        if($request->has('title')) {
-            $post->title = $request->title;
+        if($request->has('title_ru')) {
+            $post->title_ru = $request->title_ru;
             $post->slug = Str::slug($post->title);
         }
+        if($request->has('title_kk')) {
+            $post->title_kk = $request->title_kk;
+        }
+        if($request->has('title_en')) {
+            $post->title_en = $request->title_en;
+        }
 
-        if($request->has('content')) {
-            $post->content =$request->content;
+        if($request->has('content_ru')) {
+            $post->content_ru = $request->content_ru;
+        }
+        if($request->has('content_kk')) {
+            $post->content_kk = $request->content_kk;
+        }
+        if($request->has('content_en')) {
+            $post->content_en = $request->content_en;
         }
 
         if($request->has('tags')) {
@@ -124,7 +139,7 @@ class PostController extends Controller
 
         if(isset($_FILES['photo'])) {
             $fileManager = FileSystem::new($request);
-            $post->image_id = $fileManager->uploadImage('photo', $slug);
+            $post->image_id = $fileManager->uploadImage('photo', "post-$slug");
         }
 
         if(!$post->save()) {
