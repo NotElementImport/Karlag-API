@@ -63,7 +63,8 @@ class PriceGroupController extends Controller
 
         $group = new PriceGroup([
             'title_ru' => $request->title_ru,
-            'title_kk' => $request->get('title_kk', $request->title_ru),
+            'title_kk' => $request->get('title_kk'),
+            'title_en' => $request->get('title_en'),
             'order_index' => $request->get('index_order', 0),
             'delete' => 0
         ]);
@@ -86,7 +87,8 @@ class PriceGroupController extends Controller
             $price = new Price([
                 'price_group_id' => $group->id,
                 'title_ru' => $item['title_ru'],
-                'title_kk' => $item['title_kk'] ?? $item['title_ru'],
+                'title_kk' => $item['title_kk'],
+                'title_en' => $item['title_en'],
                 'author_id' => $request->user()->id,
                 'price' => $item['price'],
                 'discount' => $item['discount'] ?? 0,
@@ -123,7 +125,8 @@ class PriceGroupController extends Controller
 
         $post = new PriceGroup([
             'title_ru' => $request->title_ru,
-            'title_kk' => $request->get('title_kk', $request->title_ru),
+            'title_kk' => $request->get('title_kk'),
+            'title_en' => $request->get('title_en'),
             'order_index' => $request->get('index_order', 0),
             'delete' => 0
         ]);
@@ -150,7 +153,10 @@ class PriceGroupController extends Controller
             $item->title_ru = $request->title_ru;
         }
         if($request->has('title_kk')) {
-            $item->title_kk = $request->title_kk ?? $request->title_ru;
+            $item->title_kk = $request->title_kk;
+        }
+        if($request->has('title_en')) {
+            $item->title_kk = $request->title_en;
         }
 
         if($request->has('index_order')) {

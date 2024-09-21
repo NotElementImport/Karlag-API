@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\DB;
 class PostSearch extends Post
 {
     public static function search(array $params, bool $extended = false) {
-        $search = static::select();
+        $search = static::select()
+            ->with('image');
 
         if($extended)
             $search->with('author');

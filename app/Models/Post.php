@@ -24,7 +24,7 @@ class Post extends Model
         'tags',
         'author_id',
         'delete',
-        'imgsrc'
+        'image_id'
     ];
 
     protected $hidden = [
@@ -52,5 +52,10 @@ class Post extends Model
     public function author()
     {
         return $this->hasOne(User::class, 'id', 'author_id')->select(['id', 'name', 'email']);
+    }
+
+    public function image()
+    {
+        return $this->hasOne(File::class, 'id', 'image_id');
     }
 }

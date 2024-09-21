@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FileSystem;
 use App\Models\Global\QueryFilter;
 use App\Models\Global\Response;
 use App\Models\Global\Tags;
@@ -22,7 +23,12 @@ class PostController extends Controller
         $filteredItems =
             !$isAuthorized
                 ? array_map(
-                    fn($item) => $item->makeHidden([ 'id', 'title_ru', 'title_kk', 'content_ru', 'content_kk', 'delete', 'updated_at' ]),
+                    function ($item) {
+                        if(isset($item->image))
+                            $item->image->makeHidden(['id', 'place']) ;
+
+                        return $item->makeHidden([ 'id', 'title_ru', 'title_kk', 'content_ru', 'content_kk', 'delete', 'updated_at', 'image_id' ]);
+                    },
                     $items->items()
                 ) // Site
                 : $items->items()
@@ -41,13 +47,13 @@ class PostController extends Controller
 
     public function show(string $slug)
     {
-        $post = Post::where('slug', $slug)->first()
+        $post = Post::where('slug', $slug)->with('image')->first()
             ??  abort(404, "Post $slug not found");
 
         $post->makeHidden(['id']);
 
         if(!auth('sanctum')->check()) {
-            $post->makeHidden(['title_ru', 'title_kk', 'content_ru', 'content_kk', 'delete', 'slug', 'updated_at']);
+            $post->makeHidden(['title_ru', 'title_kk', 'title_en', 'content_ru', 'content_kk', 'content_en', 'delete', 'slug', 'updated_at']);
         }
 
         return response()->json($post);
@@ -58,8 +64,8 @@ class PostController extends Controller
         $validate = Validator::make(
             $request->all(),    
             [
-                'title' => 'required',
-                'content' => 'required',
+                'title_ru' => 'required',
+                'content_ru' => 'required',
                 'tags' => 'required|array',
                 'photo' => 'required|image'
             ]);
@@ -71,19 +77,19 @@ class PostController extends Controller
         $slug = Str::slug($request->title);
 
         // Photo:
-        $photo = $request->file('photo');
-        $photo->move(public_path('images'), $slug.'.'.pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
-        $filePath = 'images/'.$slug.'.'.pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+        $fileManager = FileSystem::new($request);
 
         // Create Model:
         /** @var Post */
         $post = new Post([
             'author_id' => $request->user()->id,
             'slug' => $slug,
-            'title' => $request->title,
-            'content' => $request->content,
+            'title_ru' => $request->title_ru,
+            'title_kk' => $request->get('title_kk'),
+            'content_ru' => $request->content_ru,
+            'content_kk' => $request->get('content_kk'),
             'tags' => Tags::toString($request->tags),
-            'imgsrc' => asset($filePath)
+            'image_id' => $fileManager->uploadImage('photo', $slug)
         ]);
 
         if(!$post->save()) {
@@ -116,10 +122,9 @@ class PostController extends Controller
             $post->tags =json_encode(array_map(fn ($item) => "[$item]", $request->tags), JSON_UNESCAPED_UNICODE);
         }
 
-        if($request->has('photo')) {
-            $photo = $request->file('photo');
-            $photo->move(public_path('images'), $post->slug.'.'.pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
-            $post->imgsrc = asset('images/'.$post->slug.'.'.pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+        if(isset($_FILES['photo'])) {
+            $fileManager = FileSystem::new($request);
+            $post->image_id = $fileManager->uploadImage('photo', $slug);
         }
 
         if(!$post->save()) {

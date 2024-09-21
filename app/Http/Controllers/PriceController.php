@@ -42,11 +42,11 @@ class PriceController extends Controller
                 ->orderBy('price_groups.order_index','asc')
                 ->with('prices')
                 ->get()
-                ->makeHidden(['id', 'delete', 'order_index', 'title_kk', 'title_ru'])
+                ->makeHidden(['id', 'delete', 'order_index', 'title_kk', 'title_ru', 'title_en'])
                 ->map(function ($item) {
                     $cortage = [];
                     foreach ($item->prices as &$price) {
-                        $price->makeHidden(['price_group_id', 'title_ru', 'title_kk', 'created_at', 'updated_at', 'delete', 'index_order', 'id', 'author', 'comment']);
+                        $price->makeHidden(['price_group_id', 'title_ru', 'title_en', 'title_kk', 'created_at', 'updated_at', 'delete', 'index_order', 'id', 'author', 'comment']);
                         $cortage[Str::slug($price->title_ru)] = $price;
                     }
                     $item->setAttribute('childs', $cortage);
@@ -78,7 +78,8 @@ class PriceController extends Controller
         $price = new Price([
             'price_group_id' => $request->group_id,
             'title_ru' => $request->title_ru,
-            'title_kk' => $request->get('title_kk', null),
+            'title_kk' => $request->get('title_kk'),
+            'title_en' => $request->get('title_en'),
             'author_id' => $request->user()->id,
             'price' => $request->price,
             'discount' => $request->get('discount', 0),
