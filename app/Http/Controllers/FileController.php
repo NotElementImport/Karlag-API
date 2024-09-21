@@ -19,8 +19,10 @@ class FileController extends Controller
        
         $query = File::select();
 
-        if($request->has('name'))
-            $query->where('src', '=', $request->get('name'));
+        $query->orderBy('id', 'desc');
+
+        if($request->has('name') && $name = $request->get('name'))
+            $query->whereLike('src', "%$name%");
         if($request->has('place'))
             $query->where('place', '=', $request->get('place'));
 

@@ -22,27 +22,28 @@ class PostSearch extends Post
             $search->where('posts.delete', '=', 0);
 
         if(isset($params['slug']))
-            $search->whereLike('posts.slug', $params['slug']);
+            $search->whereLike('posts.slug', "%$params[slug]%");
 
         if(isset($params['title'])) {
             $search->where(function ($query) use(&$params) {
-                $query->whereLike('posts.title_ru', $params['title'])
-                      ->orWhereLike('posts.title_kk', $params['title'])
-                      ->orWhereLike('posts.title_en', $params['title']);
+                $query->whereLike('posts.title_ru', "%$params[title]%")
+                      ->orWhereLike('posts.title_kk', "%$params[title]%")
+                      ->orWhereLike('posts.title_en', "%$params[title]%");
             });
         }
         if(isset($params['content'])) {
             $search->where(function ($query) use(&$params) {
-                $query->whereLike('posts.content_ru', $params['content'])
-                      ->orWhereLike('posts.content_kk', $params['content'])
-                      ->orWhereLike('posts.content_en', $params['content']);
+                $query->whereLike('posts.content_ru', "%$params[content]%")
+                      ->orWhereLike('posts.content_kk', "%$params[content]%")
+                      ->orWhereLike('posts.content_en', "%$params[content]%");
             });
         }
 
         if(isset($params['tag'])) {
             is_array($params['tag']) ?: abort(400, 'Tag must be array: tag[0], tag[1] ...');
-            foreach($params['tag'] as &$item)
-                $search->whereLike('posts.tags', $item);
+            foreach($params['tag'] as &$item) {
+                $search->whereLike('posts.tags', "%$item%");
+            }
         }
 
         if(isset($params['created_at'])) {

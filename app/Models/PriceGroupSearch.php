@@ -19,9 +19,9 @@ class PriceGroupSearch extends PriceGroup
 
         if(isset($params['title'])) {
             $search->where(function ($query) use(&$params) {
-                $query->whereLike('price_groups.title_ru', $params['title'])
-                      ->orWhereLike('price_groups.title_kk', $params['title'])
-                      ->orWhereLike('price_groups.title_en', $params['title']);
+                $query->whereLike('price_groups.title_ru', "%$params[title]%")
+                      ->orWhereLike('price_groups.title_kk', "%$params[title]%")
+                      ->orWhereLike('price_groups.title_en', "%$params[title]%");
             });
         }
 

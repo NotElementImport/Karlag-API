@@ -25,9 +25,9 @@ class PriceSearch extends Price
 
         if(isset($params['title'])) {
             $search->where(function ($query) use(&$params) {
-                $query->whereLike('prices.title_ru', $params['title'])
-                      ->orWhereLike('prices.title_kk', $params['title'])
-                      ->orWhereLike('prices.title_en', $params['title']);
+                $query->whereLike('prices.title_ru', "%$params[title]%")
+                      ->orWhereLike('prices.title_kk', "%$params[title]%")
+                      ->orWhereLike('prices.title_en', "%$params[title]%");
             });
         }
 
