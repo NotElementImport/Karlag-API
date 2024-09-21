@@ -150,33 +150,33 @@ class PostController extends Controller
         return Response::accepted("Updated");
     }
 
-    public function destroy(string $slug)
+    public function destroy(int $id)
     {
-        $post = Post::where('slug', $slug)->first();
+        $post = Post::where('id', '=', $id)->first();
 
         if(is_null($post)) {
-            return Response::notFound("Post $slug not found");
+            return Response::notFound("Post $id not found");
         }
 
         $post->delete = 1;
         $post->save();
 
         Cache::forget('post-all');
-        return Response::accepted("Ok, post $slug delete");
+        return Response::accepted("Ok, post $id delete");
     }
 
-    public function revert(string $slug)
+    public function revert(int $id)
     {
-        $post = Post::where('slug', $slug)->first();
+        $post = Post::where('id', '=', $id)->first();
 
         if(is_null($post)) {
-            return Response::notFound("Post $slug not found");
+            return Response::notFound("Post $id not found");
         }
 
         $post->delete = 0;
         $post->save();
 
         Cache::forget('post-all');
-        return Response::accepted("Ok, post $slug revert");
+        return Response::accepted("Ok, post $id revert");
     }
 }

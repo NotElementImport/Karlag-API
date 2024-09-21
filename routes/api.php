@@ -29,8 +29,8 @@ Route::prefix('api/v1')->group(function() {
         // With Token:
         Route::middleware(WithToken::class)->group(function() {
             Route::post('', [PostController::class, 'store']);
-            Route::delete('/{slug}', [PostController::class, 'destroy']);
-            Route::patch('/{slug}', [PostController::class, 'revert']);
+            Route::delete('/{id}', [PostController::class, 'destroy']);
+            Route::patch('/{id}', [PostController::class, 'revert']);
             Route::post('/{slug}', [PostController::class, 'update']);
         });
 

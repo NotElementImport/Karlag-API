@@ -317,14 +317,16 @@
                         }
                     }
                 }
-            },
+            }
+        },
+        "/api/v1/post/{id}": {
             "delete": {
                 "tags": ["Статьи"],
                 "summary": "Архивировать статью",
                 "description": "",
                 "security": [{ "api_key": [] }],
                 "parameters": [
-                    { "name": "slug", "required": true, "in": "path", "schema": { "type": "string" }}
+                    { "name": "id", "required": true, "in": "path", "schema": { "type": "string" }}
                 ],
                 "responses": {
                     "202": {
@@ -345,7 +347,7 @@
                 "description": "",
                 "security": [{ "api_key": [] }],
                 "parameters": [
-                    { "name": "slug", "required": true, "in": "path", "schema": { "type": "string" }}
+                    { "name": "id", "required": true, "in": "path", "schema": { "type": "string" }}
                 ],
                 "responses": {
                     "202": {
