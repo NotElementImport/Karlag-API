@@ -27,7 +27,7 @@ class PostController extends Controller
                         if(isset($item->image))
                             $item->image->makeHidden(['id', 'place']) ;
 
-                        return $item->makeHidden([ 'id', 'title_ru', 'title_kk', 'content_ru', 'content_kk', 'delete', 'updated_at', 'image_id' ]);
+                        return $item->makeHidden([ 'id', 'title_ru', 'title_kk', 'title_en', 'content_ru', 'content_kk', 'content_en', 'delete', 'updated_at', 'image_id' ]);
                     },
                     $items->items()
                 ) // Site
