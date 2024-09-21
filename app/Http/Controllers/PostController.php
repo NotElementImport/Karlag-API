@@ -75,7 +75,7 @@ class PostController extends Controller
             return Response::badRequest($validate->errors()->toArray());
         }
 
-        $slug = Str::slug($request->title);
+        $slug = Str::slug($request->title_ru);
 
         // Photo:
         $fileManager = FileSystem::new($request);
