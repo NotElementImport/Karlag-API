@@ -67,8 +67,7 @@ class PostController extends Controller
             [
                 'title_ru' => 'required',
                 'content_ru' => 'required',
-                'tags' => 'required|array',
-                'photo' => 'required|image'
+                'tags' => 'required|array'
             ]);
 
         if($validate->fails()) {
@@ -92,7 +91,9 @@ class PostController extends Controller
             'content_kk' => $request->get('content_kk'),
             'content_en' => $request->get('content_en'),
             'tags' => Tags::toString($request->tags),
-            'image_id' => $fileManager->uploadImage('photo', "post-$slug")
+            'image_id' => isset($_FILES['photo']) 
+                ? $fileManager->uploadImage('photo', "post-$slug") 
+                : 0 // aka null
         ]);
 
         if(!$post->save()) {
