@@ -8,7 +8,7 @@ use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 function responseJson($data, $status = 200, $headers = []) {
-    return response()->json($data, $status, $headers, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+    return response()->json($data, $status, $headers, JSON_UNESCAPED_UNICODE);
 }
 
 return Application::configure(basePath: dirname(__DIR__))
