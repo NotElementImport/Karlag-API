@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PriceController;
@@ -36,6 +37,20 @@ Route::prefix('api/v1')->group(function() {
 
         Route::get('/{slug}', [PostController::class, 'show']);
         Route::get('', [PostController::class, 'index']);
+    });
+
+    // Event:
+    Route::prefix('event')->group(function() {
+        // With Token:
+        Route::middleware(WithToken::class)->group(function() {
+            Route::post('', [EventController::class, 'store']);
+            Route::delete('/{id}', [EventController::class, 'destroy']);
+            Route::patch('/{id}', [EventController::class, 'revert']);
+            Route::post('/{slug}', [EventController::class, 'update']);
+        });
+
+        Route::get('', [EventController::class, 'index']);
+        Route::get('/{slug}', [EventController::class, 'show']);
     });
 
     Route::get('price-list', [PriceController::class, 'cached']);

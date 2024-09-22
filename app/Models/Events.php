@@ -3,15 +3,14 @@
 namespace App\Models;
 
 use App\Models\Global\Language;
-use App\Models\Global\Tags;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model
+class Events extends Model
 {
     use HasFactory;
 
-    protected $table = 'posts';
+    protected $table = 'events';
 
     protected $appends = [ 'tags', 'title', 'content' ];
 
@@ -24,6 +23,7 @@ class Post extends Model
         'content_en',
         'slug',
         'tags',
+        'start_at',
         'author_id',
         'delete',
         'image_id'

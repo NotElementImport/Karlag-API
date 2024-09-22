@@ -334,7 +334,7 @@
                         "content": {
                             "application/json": {
                                 "example": {
-                                    "message": "Ok, post <slug> delete"
+                                    "message": "Ok, post <id> delete"
                                 }
                             }
                         }
@@ -355,7 +355,234 @@
                         "content": {
                             "application/json": {
                                 "example": {
-                                    "message": "Ok, post <slug> revert"
+                                    "message": "Ok, post <id> revert"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },"/api/v1/event": {
+            "get": {
+                "tags": ["Мероприятия"],
+                "summary": "Получить все мероприятия (Для сайта и админки)",
+                "description": "Два режима работы: С авторизацией Тостая версия, и без авторизации Тонкая версия",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } },
+                    { "name": "page", "in": "query", "schema": { "default": 0, "type": "string" } },
+                    { "name": "perpage", "in": "query", "schema": { "default": 15, "type": "string" } },
+                    { "name": "sort", "in": "query", "schema": { "type": "string", "enum": [ "-id", "id", "-created_at", "created_at", "title_ru", "-title_ru", "slug", "-slug" ]} },
+                    { "name": "tag", "in": "query", "description": "Фильтр тэгов, в скобках указывается index из массива тэгов в поиске", "schema": { "type": "array" } },
+                    { "name": "title", "in": "query", "description": "Поиск по названию", "schema": { "type": "string" } },
+                    { "name": "content", "in": "query", "description": "Поиск по контенту", "schema": { "type": "string" } },
+                    { "name": "created_at", "in": "query", "schema": { "type": "string" } },
+                    { "name": "mode", "in": "query", "description": "Выбор данных (Актуально/История)", "schema": { "enum": [ "all", "actual", "history" ] } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "items": [{
+                                        "id": 0,
+                                        "slug": "string",
+                                        "title_ru": "string",
+                                        "title_kk": "string",
+                                        "title_en": "string",
+                                        "content_ru": "string",
+                                        "content_kk": "string",
+                                        "content_en": "string",
+                                        "tags": [
+                                            "string"
+                                        ],
+                                        "start_at": "string",
+                                        "created_at": "string",
+                                        "updated_at": "string",
+                                        "imgsrc": "string",
+                                        "delete": 0,
+                                        "title": "string",
+                                        "content": "string",
+                                        "author": {
+                                            "id": 0,
+                                            "name": "string",
+                                            "email": "string"
+                                        }
+                                    }],
+                                    "meta": {
+                                        "size": 0,
+                                        "perpage": 0,
+                                        "page": 0
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Мероприятия"],
+                "summary": "Создать мероприятие",
+                "description": "Создаёт статью для сайта. Тело `multipart/form-data`",
+                "security": [{ "api_key": [] }],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title_ru": { "type": "string" },
+                                    "title_kk": { "type": "string" },
+                                    "title_en": { "type": "string" },
+                                    "content_ru": { "type": "string" },
+                                    "content_kk": { "type": "string" },
+                                    "content_en": { "type": "string" },
+                                    "start_at": { "type": "string" },
+                                    "tags": { "type": "array", "items": { "type": "string" } },
+                                    "photo": { "type": "string", "format": "binary" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Created"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/event/{slug}": {
+            "get": {
+                "tags": ["Мероприятия"],
+                "summary": "Получить мероприятие",
+                "description": "Два режима работы: С авторизацией (больше информации), и без авторизации",
+                "parameters": [
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } },
+                    { "name": "slug", "required": true, "description": "Получить статью по slug-у", "in": "path", "schema": { "type": "string"}}
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Один элемент",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "id": 0,
+                                    "slug": "string",
+                                    "title_ru": "string",
+                                    "title_kk": "string",
+                                    "title_en": "string",
+                                    "content_ru": "string",
+                                    "content_kk": "string",
+                                    "content_en": "string",
+                                    "tags": [
+                                        "string"
+                                    ],
+                                    "start_at": "string",
+                                    "created_at": "string",
+                                    "updated_at": "string",
+                                    "imgsrc": "string",
+                                    "delete": 0,
+                                    "title": "string",
+                                    "content": "string",
+                                    "author": {
+                                        "id": 0,
+                                        "name": "string",
+                                        "email": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Мероприятия"],
+                "summary": "Обновить мероприятие",
+                "description": "Обновить статью на сайте. Тело `multipart/form-data`",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "slug", "required": true, "description": "Получить статью по slug-у", "in": "path", "schema": { "type": "string" }}
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title_ru": { "type": "string" },
+                                    "title_kk": { "type": "string" },
+                                    "title_en": { "type": "string" },
+                                    "content_ru": { "type": "string" },
+                                    "content_kk": { "type": "string" },
+                                    "content_en": { "type": "string" },
+                                    "start_at": { "type": "string" },
+                                    "tags": { "type": "array", "items": { "type": "string" } },
+                                    "photo": { "type": "string", "format": "binary" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Обновлено",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Updated"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/event/{id}": {
+            "delete": {
+                "tags": ["Мероприятия"],
+                "summary": "Архивировать мероприятие",
+                "description": "",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "required": true, "in": "path", "schema": { "type": "string" }}
+                ],
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Ok, post <id> delete"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": ["Мероприятия"],
+                "summary": "Восстановить мероприятие",
+                "description": "",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "required": true, "in": "path", "schema": { "type": "string" }}
+                ],
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Ok, post <id> revert"
                                 }
                             }
                         }

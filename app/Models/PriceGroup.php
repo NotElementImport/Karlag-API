@@ -18,6 +18,7 @@ class PriceGroup extends Model
     protected $fillable = [
         'title_ru',
         'title_kk',
+        'title_en',
         'delete',
         'order_index'
     ];

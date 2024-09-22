@@ -31,6 +31,7 @@ class Price extends Model
         'discount',
         'title_ru',
         'title_kk',
+        'title_en',
         'tags',
         'comment',
         'author_id',
