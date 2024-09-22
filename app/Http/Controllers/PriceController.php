@@ -23,7 +23,7 @@ class PriceController extends Controller
 
         $items = PriceSearch::search($request->all());
 
-        return response()->json([ 
+        return responseJson([ 
             'items' => $items->items(),
             'meta' => [
                 'size'     => $items->total(),
@@ -57,7 +57,7 @@ class PriceController extends Controller
                 ->toArray();
         });
 
-        return response()->json($items);
+        return responseJson($items);
     }
 
     public function store(Request $request)

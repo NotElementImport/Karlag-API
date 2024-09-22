@@ -28,7 +28,7 @@ class FileController extends Controller
 
         $items = $query->paginate('15');
 
-        return response()->json([ 
+        return responseJson([ 
             'items' => $items->items(),
             'meta' => [
                 'size'     => $items->total(),

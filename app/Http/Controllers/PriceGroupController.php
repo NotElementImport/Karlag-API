@@ -36,7 +36,7 @@ class PriceGroupController extends Controller
             $items->items()
         );
 
-        return response()->json([ 
+        return responseJson([ 
             'items' => $prepared,
             'meta' => [
                 'size'     => $items->total(),

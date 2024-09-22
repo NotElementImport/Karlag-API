@@ -37,7 +37,7 @@ class EventController extends Controller
                   // Admin
         ;
 
-        return response()->json([ 
+        return responseJson([ 
             'items' => $filteredItems,
             'meta' => [
                 'size'     => $items->total(),
@@ -59,7 +59,7 @@ class EventController extends Controller
             $post->makeHidden(['title_ru', 'title_kk', 'title_en', 'content_ru', 'content_kk', 'content_en', 'delete', 'slug', 'updated_at']);
         }
 
-        return response()->json($post);
+        return responseJson($post);
     }
 
     public function store(Request $request)
