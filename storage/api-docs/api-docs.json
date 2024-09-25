@@ -144,6 +144,212 @@
                 }
             }
         },
+        "/api/v1/repressed": {
+            "get": {
+                "tags": ["Репрессированные"],
+                "summary": "Получить всё (Для сайта и админки)",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } },
+                    { "name": "page", "in": "query", "schema": { "default": 0, "type": "string" } },
+                    { "name": "perpage", "in": "query", "schema": { "default": 15, "type": "string" } },
+                    { "name": "sort", "in": "query", "schema": { "type": "string", "enum": [ "-id", "id", "-created_at", "created_at", "fio", "-fio", "slug", "-slug" ]} },
+                    { "name": "fio", "in": "query", "description": "Поиск по названию", "schema": { "type": "string" } },
+                    { "name": "content", "in": "query", "description": "Поиск по контенту", "schema": { "type": "string" } },
+                    { "name": "created_at", "in": "query", "schema": { "type": "string" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "items": [{
+                                        "id": 0,
+                                        "slug": "string",
+                                        "fio": "string",
+                                        "birthday_year": 0,
+                                        "death_year": 0,
+                                        "content_ru": "string",
+                                        "content_kk": "string",
+                                        "content_en": "string",
+                                        "delete": 0,
+                                        "created_at": "string",
+                                        "updated_at": "string",
+                                        "content": "string",
+                                        "author": {
+                                            "id": 0,
+                                            "name": "string",
+                                            "email": "string"
+                                        }
+                                    }],
+                                    "meta": {
+                                        "size": 0,
+                                        "perpage": 0,
+                                        "page": 0
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Репрессированные"],
+                "summary": "Создать",
+                "security": [{ "api_key": [] }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "fio": { "type": "string" },
+                                    "content_ru": { "type": "string" },
+                                    "content_kk": { "type": "string" },
+                                    "content_en": { "type": "string" },
+                                    "birthday_year": { "type": "string" },
+                                    "death_year": { "type": "string" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Created"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/repressed/{slug}": {
+            "get": {
+                "tags": ["Репрессированные"],
+                "summary": "Получить",
+                "description": "Два режима работы: С авторизацией (больше информации), и без авторизации",
+                "parameters": [
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } },
+                    { "name": "slug", "required": true, "description": "Получить статью по slug-у", "in": "path", "schema": { "type": "string"}}
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Один элемент",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "id": 0,
+                                    "slug": "string",
+                                    "fio": "string",
+                                    "birthday_year": 0,
+                                    "death_year": 0,
+                                    "content_ru": "string",
+                                    "content_kk": "string",
+                                    "content_en": "string",
+                                    "delete": 0,
+                                    "created_at": "string",
+                                    "updated_at": "string",
+                                    "content": "string",
+                                    "author": {
+                                        "id": 0,
+                                        "name": "string",
+                                        "email": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Репрессированные"],
+                "summary": "Обновить",
+                "description": "Обновить статью на сайте. Тело `multipart/form-data`",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "slug", "required": true, "description": "Получить статью по slug-у", "in": "path", "schema": { "type": "string" }}
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "fio": { "type": "string" },
+                                    "content_ru": { "type": "string" },
+                                    "content_kk": { "type": "string" },
+                                    "content_en": { "type": "string" },
+                                    "birthday_year": { "type": "string" },
+                                    "death_year": { "type": "string" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Обновлено",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Updated"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/repressed/{id}": {
+            "delete": {
+                "tags": ["Репрессированные"],
+                "summary": "Архивировать",
+                "description": "",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "required": true, "in": "path", "schema": { "type": "string" }}
+                ],
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Ok, record <id> delete"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": ["Репрессированные"],
+                "summary": "Восстановить",
+                "description": "",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "required": true, "in": "path", "schema": { "type": "string" }}
+                ],
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Ok, record <id> revert"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/post": {
             "get": {
                 "tags": ["Статьи"],
@@ -362,7 +568,8 @@
                     }
                 }
             }
-        },"/api/v1/event": {
+        },
+        "/api/v1/event": {
             "get": {
                 "tags": ["Мероприятия"],
                 "summary": "Получить все мероприятия (Для сайта и админки)",

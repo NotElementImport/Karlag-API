@@ -6,6 +6,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\PriceGroupController;
+use App\Http\Controllers\RepressedController;
 use App\Http\Middleware\WithToken;
 use Illuminate\Support\Facades\Route;
 
@@ -31,7 +32,7 @@ Route::prefix('api/v1')->group(function() {
         Route::middleware(WithToken::class)->group(function() {
             Route::post('', [PostController::class, 'store']);
             Route::delete('/{id}', [PostController::class, 'destroy']);
-            Route::patch('/{id}', [PostController::class, 'revert']);
+            Route::patch('/{id}',  [PostController::class, 'revert']);
             Route::post('/{slug}', [PostController::class, 'update']);
         });
 
@@ -45,7 +46,7 @@ Route::prefix('api/v1')->group(function() {
         Route::middleware(WithToken::class)->group(function() {
             Route::post('', [EventController::class, 'store']);
             Route::delete('/{id}', [EventController::class, 'destroy']);
-            Route::patch('/{id}', [EventController::class, 'revert']);
+            Route::patch('/{id}',  [EventController::class, 'revert']);
             Route::post('/{slug}', [EventController::class, 'update']);
         });
 
@@ -53,17 +54,30 @@ Route::prefix('api/v1')->group(function() {
         Route::get('/{slug}', [EventController::class, 'show']);
     });
 
-    Route::get('price-list', [PriceController::class, 'cached']);
+    // Event:
+    Route::prefix('repressed')->group(function() {
+        // With Token:
+        Route::middleware(WithToken::class)->group(function() {
+            Route::post('', [RepressedController::class, 'store']);
+            Route::delete('/{id}', [RepressedController::class, 'destroy']);
+            Route::patch('/{id}',  [RepressedController::class, 'revert']);
+            Route::post('/{slug}', [RepressedController::class, 'update']);
+        });
+
+        Route::get('', [RepressedController::class, 'index']);
+        Route::get('/{slug}', [RepressedController::class, 'show']);
+    });
 
     // Price:
+    Route::get('price-list', [PriceController::class, 'cached']);
     Route::prefix('price')->group(function() {
         // With Token:
         Route::middleware(WithToken::class)->group(function() {
             Route::post('', [PriceController::class, 'store']);
-            Route::post('batch', [PriceGroupController::class, 'batchStore']);
+            Route::post('batch',   [PriceGroupController::class, 'batchStore']);
             Route::delete('/{id}', [PriceController::class, 'destroy']);
-            Route::patch('/{id}', [PriceController::class, 'revert']);
-            Route::post('/{id}', [PriceController::class, 'update']);
+            Route::patch('/{id}',  [PriceController::class, 'revert']);
+            Route::post('/{id}',   [PriceController::class, 'update']);
         });
 
         Route::get('', [PriceController::class, 'index']);
