@@ -11,6 +11,13 @@ function responseJson($data, $status = 200, $headers = []) {
     return response()->json($data, $status, $headers, JSON_UNESCAPED_UNICODE);
 }
 
+$inipath = php_ini_loaded_file();
+
+if (!$inipath) {
+    echo 'A php.ini file is not loaded';
+    die();
+}
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',

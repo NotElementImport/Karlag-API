@@ -59,17 +59,9 @@ class FileSystem extends File {
         $extension = pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION);
         $fileName  = $rename ?? pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME);
 
-        $file = $this->request->file($name, null) 
-             ?? abort(400, "File $name not sended");
-
-        try {
-            $file->move('files', "$fileName.$extension");
-        }
-        catch(FileException $e) {
-            abort(500, "File $name cannot be uploaded in server");
-        }
-
         $path = base_path("/public/files/$fileName.$extension");
+        if(!move_uploaded_file($_FILES[$name]['tmp_name'], $path))
+            abort(500, "File $name cannot be uploaded in server");
 
         if($this->compress($path, $path, 50)) {
             unlink($path);
@@ -83,17 +75,10 @@ class FileSystem extends File {
         $extension = pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION);
         $fileName  = $rename ?? pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME);
 
-        $file = $this->request->file($name, null) 
-            ?? abort(400, "File $name not sended");
-
-        try {
-            $file->move('files', "$fileName.$extension");
-        }
-        catch(FileException $e) {
-            abort(500, "File $name cannot be uploaded in server");
-        }
-
         $path = base_path("/public/files/$fileName.$extension");
+        if(!move_uploaded_file($_FILES[$name]['tmp_name'], $path))
+            abort(500, "File $name cannot be uploaded in server");
+
 
         if($this->compress($path, $path, 50)) {
             unlink($path);
@@ -107,17 +92,9 @@ class FileSystem extends File {
         $extension = pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION);
         $fileName  = $rename ?? pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME);
 
-        $file = $this->request->file($name, null) 
-            ?? abort(400, "File $name not sended");
-
-        try {
-            $file->move('files', "$fileName.$extension");
-        }
-        catch(FileException $e) {
-            abort(500, "File $name cannot be uploaded in server");
-        }
-
         $path = base_path("/public/files/$fileName.$extension");
+        if(!move_uploaded_file($_FILES[$name]['tmp_name'], $path))
+            abort(500, "File $name cannot be uploaded in server");
 
         if($this->compress($path, $path, 50)) {
             unlink($path);
@@ -132,17 +109,9 @@ class FileSystem extends File {
             $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
             $fileName  = pathinfo($file['name'], PATHINFO_FILENAME);
 
-            $file = $this->request->file($key, null) 
-                ?? abort(400, "File $key not sended");
-
-            try {
-                $file->move('files', "$fileName.$extension");
-            }
-            catch(FileException $e) {
-                abort(500, "File $key cannot be uploaded in server");
-            }
-
             $path = base_path("/public/files/$fileName.$extension");
+            if(!move_uploaded_file($file['tmp_name'], $path))
+                abort(500, "File $key cannot be uploaded in server");
 
             if($this->compress($path, $path, 50)) {
                 unlink($path);
@@ -158,17 +127,9 @@ class FileSystem extends File {
             $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
             $fileName  = pathinfo($file['name'], PATHINFO_FILENAME);
 
-            $file = $this->request->file($key, null) 
-                ?? abort(400, "File $key not sended");
-
-            try {
-                $file->move('files', "$fileName.$extension");
-            }
-            catch(FileException $e) {
-                abort(500, "File $key cannot be uploaded in server");
-            }
-
             $path = base_path("/public/files/$fileName.$extension");
+            if(!move_uploaded_file($file['tmp_name'], $path))
+                abort(500, "File $key cannot be uploaded in server");
 
             if($this->compress($path, $path, 50)) {
                 unlink($path);

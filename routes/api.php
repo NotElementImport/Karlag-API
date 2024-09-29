@@ -97,6 +97,7 @@ Route::prefix('api/v1')->group(function() {
     // Price Group:
     Route::prefix('gallery')->group(function() {
         Route::get('', [GalleryController::class, 'index']);
+        Route::get('dirs', [GalleryController::class, 'dirs']);
         // With Token:
         Route::middleware(WithToken::class)->group(function() {
             Route::post('', [GalleryController::class, 'store']);

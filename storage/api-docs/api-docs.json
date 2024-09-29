@@ -1292,6 +1292,24 @@
                     }
                 }
             }
+        },
+        "/api/v1/gallery/dirs": {
+            "get": {
+                "tags": ["Галерея"],
+                "summary": "Получить директории",
+                "responses": {
+                    "200": {
+                        "description": "Успешно",
+                        "content": {
+                            "application/json": {
+                                "example": [
+                                    
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

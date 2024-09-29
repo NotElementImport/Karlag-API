@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-configure gd --with-jpeg
 RUN docker-php-ext-install gd
 
-COPY ./docker/dev.php.ini /usr/local/etc/php/conf.d/php.ini
+COPY ./docker/dev.php.ini /usr/local/etc/php/php.ini
 
 # Install composer:
 ENV COMPOSER_ALLOW_SUPERUSER=1

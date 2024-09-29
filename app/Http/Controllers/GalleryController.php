@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\FileSystem;
 use App\Models\Gallery;
 use App\Models\GallerySearch;
 use App\Models\Global\Response;
+use Cache;
 use File;
-use Illuminate\Http\Request;
 use Validator;
 
 class GalleryController extends Controller
@@ -27,10 +28,20 @@ class GalleryController extends Controller
         ]);
     }
 
-    public function store(Request $request) {
-        // phpinfo();
-        // die();
+    public function dirs(Request $request) 
+    {
+        $items = Cache::rememberForever('gallery-dirs', function() {
+            return Gallery::select(['place'])
+                ->distinct()
+                ->whereLike('place', 'gallery/%')
+                ->get();
+        });
 
+        return Response::okJSON($items);
+    }
+
+    public function store(Request $request)
+    {
         $validate = Validator::make(
             $request->all(),    
             [
@@ -47,10 +58,13 @@ class GalleryController extends Controller
             $fileManager->uploadCustom($fileKey, $dir);
         }
 
+        Cache::forget('gallery-dirs');
+
         return Response::created('Files created');
     }
 
-    public function destroy(Request $request) {
+    public function destroy(Request $request)
+    {
         $validate = Validator::make(
             $request->all(),    
             [
@@ -74,6 +88,8 @@ class GalleryController extends Controller
                 return Response::internalServerError('While file delete something wrong database');
         }
 
+        Cache::forget('gallery-dirs');
+        
         return Response::accepted('Files deleted');
     }
 }
