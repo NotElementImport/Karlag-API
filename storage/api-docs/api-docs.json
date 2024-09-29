@@ -1203,6 +1203,95 @@
                     }
                 }
             }
+        },
+        "/api/v1/gallery": {
+            "get": {
+                "tags": ["Галерея"],
+                "summary": "Получить всё (Для сайта и админки)",
+                "parameters": [
+                    { "name": "dir", "description": "Папка", "in": "query", "schema": { "type": "string" } },
+                    { "name": "q",   "description": "Поиск по именни", "in": "query", "schema": {"type": "string" } }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "items": [{
+                                        "id": 0,
+                                        "src": "string",
+                                        "place": "string"
+                                    }],
+                                    "meta": {
+                                        "size": 0,
+                                        "perpage": 0,
+                                        "page": 0
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Галерея"],
+                "summary": "Загрузить",
+                "description": "Тело `multipart/form-data`",
+                "security": [{ "api_key": [] }],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "dir": { "type": "string" },
+                                    "file_0": { "type": "string", "format": "binary" },
+                                    "file_1": { "type": "string", "format": "binary" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Created"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Галерея"],
+                "summary": "Удалить",
+                "security": [{ "api_key": [] }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "example": {
+                                "id": [0]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Files deleted",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Files deleted"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
