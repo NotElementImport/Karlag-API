@@ -32,6 +32,23 @@ class FileSystem extends File {
             : abort(500, "Error while saving file");
     }
 
+    public function uploadCustom($name, $dir, $rename = null) {
+        $extension = pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION);
+        $fileName  = $rename ?? pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME);
+
+        $file = $this->request->file($name, null) 
+             ?? abort(400, "File $name not sended");
+
+        try {
+            $file->move('files', "$fileName.$extension");
+        }
+        catch(FileException $e) {
+            abort(500, "File $name cannot be uploaded in server");
+        }
+
+        return $this->createRecord("/files/$fileName.$extension", $dir);
+    }
+
     public function uploadImage($name, $rename = null) {
         $extension = pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION);
         $fileName  = $rename ?? pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME);

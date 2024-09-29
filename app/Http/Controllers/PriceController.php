@@ -18,12 +18,9 @@ class PriceController extends Controller
 {
     public function index(Request $request)
     {
-        auth('sanctum')->check()
-            ?: abort(401, 'Unathorized');
-
         $items = PriceSearch::search($request->all());
 
-        return responseJson([ 
+        return Response::okJSON([ 
             'items' => $items->items(),
             'meta' => [
                 'size'     => $items->total(),
@@ -57,14 +54,11 @@ class PriceController extends Controller
                 ->toArray();
         });
 
-        return responseJson($items);
+        return Response::okJSON($items);
     }
 
     public function store(Request $request)
     {
-        auth('sanctum')->check()
-            ?: abort(401, 'Unathorized');
-
         $validate = Validator::make(
             $request->all(),    
             [
@@ -73,8 +67,8 @@ class PriceController extends Controller
                 'price' => 'required',
             ]);
 
-        $validate->fails()
-            ?: abort(400, $validate->errors()->toArray());
+        if($validate->fails())
+            return Response::badRequest($validate->errors()->toArray());
 
         $price = new Price([
             'price_group_id' => $request->group_id,
@@ -95,31 +89,26 @@ class PriceController extends Controller
 
         return $price->save()
             ? Response::created('Created')
-            : abort(500, "Ops something wrong while saving");
+            : Response::internalServerError('Ops something wrong while saving');
     }
 
     public function update(Request $request, string $id)
     {
-        auth('sanctum')->check()
-            ?: abort(401, 'Unathorized');
-
-        /** @var Price $item */
-        $price = Price::where("id", $id)
-            ->first() 
-            ?? abort(404, "Price $id not found");
+        /** @var Price */
+        $price = Price::where("id", $id)->first()
+              ?? Response::notFound("Price $id not found");
 
         $price->fill( $request->post() );
 
         if($request->has('tags'))
-            $price->tags = Tags::toString($request->tags);
+            $price->setAttribute('tags', Tags::toString($request->tags));
 
         Cache::forget('price-all-kk');
         Cache::forget('price-all-ru');
 
-        return 
-            $price->save()
-                ? Response::accepted("Updated")
-                : abort(500, "Ops something wrong while saving");
+        return $price->save()
+            ? Response::accepted("Updated")
+            : Response::internalServerError("Ops something wrong while saving");
     }
 
     public function destroy(string $id)

@@ -27,14 +27,13 @@ class AuthController extends Controller
         [$login, $password] = [$request->input('login'), $request->input('password')];
 
         // Validate prop data:
-        /** @var User|null */
         $user = User::where('name', $login)->first();
 
-        if(is_null($user) || !Hash::check($password, $user->password)) {
+        if(is_null($user) || !Hash::check($password, $user->password))
             return Response::badRequest('The provided credentials are incorrect');
-        }
 
         $response = [ 'token' => $user->createToken($login)->plainTextToken, 'id' => $user->id ];
-        return Response::json($response);
+
+        return Response::okJSON($response);
     }
 }

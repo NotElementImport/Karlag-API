@@ -29,7 +29,7 @@ class RepressedController extends Controller
             // Admin
             : $items->items();
 
-        return responseJson([ 
+        return Response::okJSON([ 
             'items' => $filteredItems,
             'meta'  => [
                 'size'     => $items->total(),
@@ -43,14 +43,14 @@ class RepressedController extends Controller
     public function show(string $slug)
     {
         $post = Repressed::where('slug', '=', $slug)->first()
-             ?? abort(404, "Record $slug not found");
+             ?? Response::notFound("Record $slug not found", true);
 
         $post->makeHidden(['id']);
 
         !auth('sanctum')->check()
             ?: $post->makeHidden(['content_ru', 'content_kk', 'content_en', 'delete', 'slug', 'updated_at']);
 
-        return responseJson($post);
+        return Response::okJSON($post);
     }
 
     public function store(Request $request)
@@ -61,8 +61,8 @@ class RepressedController extends Controller
             $request->all(),    
             [ 'fio' => 'required' ]);
 
-        !$validate->fails()
-            ?: abort(400, implode(", ", $validate->errors()->toArray()));
+        if($validate->fails())
+            return Response::badRequest($validate->errors()->toArray());
 
         // Custom Attribute Builder
 
@@ -93,17 +93,11 @@ class RepressedController extends Controller
 
     public function update(Request $request, string $slug)
     {
+        /** @var Repressed */
         $post = Repressed::where("slug", '=', $slug)->first()
-             ?? abort(404, "Record $slug not found");
+             ?? Response::notFound("Record $slug not found", true);
 
-        $post->fio = $request->get('fio', $post->fio);
-
-        $post->content_ru = $request->get('content_ru', $post->content_ru);
-        $post->content_kk = $request->get('content_kk', $post->content_kk);
-        $post->content_en = $request->get('content_en', $post->content_en);
-
-        $post->birthday_year = $request->get('birthday_year', $post->birthday_year);
-        $post->death_year    = $request->get('death_year', $post->death_year);
+        $post->fill( $request->all() );
 
         $post->slug = Str::slug($post->fio);
 
@@ -111,7 +105,7 @@ class RepressedController extends Controller
             $birthday = $post->birthday_year;
             $post->slug .= "-$birthday";
         }
-             
+
         return $post->save()
             ? Response::accepted("Updated")
             : Response::internalServerError("Ops something wrong while saving");
@@ -120,24 +114,24 @@ class RepressedController extends Controller
     public function destroy(int $id)
     {
         $post = Repressed::where('id', '=', $id)->first()
-             ?? abort(404, "Record $id not found");
+             ?? Response::notFound("Record $id not found", true);
 
         $post->delete = 1;
 
         return $post->save()
-            ? Response::accepted("Ok, record $id delete")
+            ? Response::accepted("Record $id delete")
             : Response::internalServerError("Ops something wrong while saving");
     }
 
     public function revert(int $id)
     {
         $post = Repressed::where('id', '=', $id)->first()
-             ?? abort(404, "Record $id not found");
+             ?? Response::notFound("Record $id not found", true);
 
         $post->delete = 0;
 
         return $post->save()
-            ? Response::accepted("Ok, record $id revert")
+            ? Response::accepted("Record $id revert")
             : Response::internalServerError("Ops something wrong while saving");
     }
 }

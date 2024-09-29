@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\PriceGroupController;
@@ -35,9 +36,8 @@ Route::prefix('api/v1')->group(function() {
             Route::patch('/{id}',  [PostController::class, 'revert']);
             Route::post('/{slug}', [PostController::class, 'update']);
         });
-
-        Route::get('/{slug}', [PostController::class, 'show']);
         Route::get('', [PostController::class, 'index']);
+        Route::get('/{slug}', [PostController::class, 'show']);
     });
 
     // Event:
@@ -73,14 +73,13 @@ Route::prefix('api/v1')->group(function() {
     Route::prefix('price')->group(function() {
         // With Token:
         Route::middleware(WithToken::class)->group(function() {
+            Route::get('', [PriceController::class, 'index']);
             Route::post('', [PriceController::class, 'store']);
             Route::post('batch',   [PriceGroupController::class, 'batchStore']);
             Route::delete('/{id}', [PriceController::class, 'destroy']);
             Route::patch('/{id}',  [PriceController::class, 'revert']);
             Route::post('/{id}',   [PriceController::class, 'update']);
         });
-
-        Route::get('', [PriceController::class, 'index']);
     });
 
     // Price Group:
@@ -92,6 +91,16 @@ Route::prefix('api/v1')->group(function() {
             Route::delete('/{id}', [PriceGroupController::class, 'destroy']);
             Route::patch('/{id}', [PriceGroupController::class, 'revert']);
             Route::post('/{id}', [PriceController::class, 'update']);
+        });
+    });
+
+    // Price Group:
+    Route::prefix('gallery')->group(function() {
+        // With Token:
+        Route::middleware(WithToken::class)->group(function() {
+            Route::get('', [GalleryController::class, 'index']);
+            Route::post('', [GalleryController::class, 'store']);
+            Route::delete('', [GalleryController::class, 'destroy']);
         });
     });
 });

@@ -4,61 +4,55 @@ namespace App\Models\Global;
 
 class Response
 {
-    public static function manyPaginate(&$object, $map) {
-        return response([ 
-            'items' => array_map(fn ($item) => $map($item), $object->items()),
-            'meta' => [
-                'size'    => $object->total(),
-                'perpage' => $object->perPage(),
-                'page'    => $object->currentPage()
-            ]
-        ]);
+    public static function okJSON($object) {
+        return responseJson(is_array($object) ? $object : $object->toArray());
     }
 
-    public static function many(&$object, $size, $perPage, $page) {
-        return response([ 
-            'items' => is_array($object) ? $object : $object->toArray(),
-            'meta' => [
-                'size'    => $size,
-                'perpage' => $perPage,
-                'page'    => $page
-            ]
-        ]);
-    }
-
-    public static function json(&$object) {
-        return response()->json(is_array($object) ? $object : $object->toArray());
-    }
-
-    public static function forbiden($message) {
+    public static function forbiden($message, $abort = false) {
+        if($abort)
+            abort(403, $message);
         return response([ 'message' => $message ], 403);
     }
 
-    public static function notFound($message) {
+    public static function notFound($message, $abort = false) {
+        if($abort)
+            abort(404, $message);
         return response([ 'message' => $message ], 404);
     }
 
-    public static function unauthorized($message) {
+    public static function unauthorized($message, $abort = false) {
+        if($abort)
+            abort(401, $message);
         return response([ 'message' => $message ], 401);
     }
 
-    public static function conflict($message) {
+    public static function conflict($message, $abort = false) {
+        if($abort)
+            abort(409, $message);
         return response([ 'message' => $message ], 409);
     }
 
-    public static function badRequest($message) {
+    public static function badRequest($message, $abort = false) {
+        if($abort)
+            abort(400, $message);
         return response([ 'message' => $message ], 400);
     }
 
-    public static function notImplemented($message) {
+    public static function notImplemented($message, $abort = false) {
+        if($abort)
+            abort(501, $message);
         return response([ 'message' => $message ], 501);
     }
 
-    public static function internalServerError($message) {
+    public static function internalServerError($message, $abort = false) {
+        if($abort)
+            abort(500, $message);
         return response([ 'message' => $message ], 500);
     }
 
-    public static function unknownError($message) {
+    public static function unknownError($message, $abort = false) {
+        if($abort)
+            abort(520, $message);
         return response([ 'message' => $message ], 520);
     }
 

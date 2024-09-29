@@ -16,9 +16,6 @@ class PriceGroupController extends Controller
 {
     public function index(Request $request)
     {
-        auth('sanctum')->check()
-            ?: abort(401, 'Unathorized');
-
         $items = PriceGroupSearch::search($request->all());
 
         $prepared = array_map(
@@ -36,7 +33,7 @@ class PriceGroupController extends Controller
             $items->items()
         );
 
-        return responseJson([ 
+        return Response::okJSON([ 
             'items' => $prepared,
             'meta' => [
                 'size'     => $items->total(),
@@ -47,10 +44,8 @@ class PriceGroupController extends Controller
         ]);
     }
 
-    public function batchStore(Request $request) {
-        auth('sanctum')->check()
-            ?: abort(401, 'Unathorized');
-
+    public function batchStore(Request $request) 
+    {
         // Create Price Group
         $validate = Validator::make(
             $request->all(),    
@@ -59,8 +54,8 @@ class PriceGroupController extends Controller
                 'prices' => 'required|array'
             ]);
 
-        $validate->fails()
-            ?: abort(400, $validate->errors()->toArray());
+        if($validate->fails())
+            return Response::badRequest($validate->errors()->toArray());
 
         $group = new PriceGroup([
             'title_ru' => $request->title_ru,
@@ -71,7 +66,7 @@ class PriceGroupController extends Controller
         ]);
 
         $group->save()
-            ?: abort(500, 'Ops something wrong while saving price group');
+            ?: Response::internalServerError('Ops something wrong while saving price group', true);
 
         // Create Prices
         foreach($request->prices as $item) {
@@ -81,10 +76,10 @@ class PriceGroupController extends Controller
                     'title_ru' => 'required',
                     'price' => 'required',
                 ]);
-    
-            $validate->fails()
-                ?: abort(400, $validate->errors()->toArray());
-    
+
+            if($validate->fails())
+                return Response::badRequest($validate->errors()->toArray());
+
             $price = new Price([
                 'price_group_id' => $group->id,
                 'title_ru' => $item['title_ru'],
@@ -98,9 +93,9 @@ class PriceGroupController extends Controller
                 'comment' => $item['comment'] ?? '',
                 'delete' => 0
             ]);
-    
+
             $price->save()
-                ?: abort(500, 'Ops something wrong while saving price');
+                ?: Response::internalServerError('Ops something wrong while saving price', true);
         }
 
         Cache::forget('price-all-ru');
@@ -111,18 +106,14 @@ class PriceGroupController extends Controller
 
     public function store(Request $request)
     {
-        auth('sanctum')->check()
-            ?: abort(401, 'Unathorized');
-
         $validate = Validator::make(
             $request->all(),    
             [
                 'title_ru' => 'required',
             ]);
 
-        if($validate->fails()) {
+        if($validate->fails())
             return Response::badRequest($validate->errors()->toArray());
-        }
 
         $post = new PriceGroup([
             'title_ru' => $request->title_ru,
@@ -132,85 +123,53 @@ class PriceGroupController extends Controller
             'delete' => 0
         ]);
 
-        if(!$post->save()) {
-            return Response::internalServerError("Ops something wrong while saving");
-        }
-
-        return Response::created('Created');
+        return $post->save()
+            ? Response::created('Created')
+            : Response::internalServerError("Ops something wrong while saving");
     }
 
     public function update(Request $request, string $id)
     {
-        auth('sanctum')->check()
-            ?: abort(401, 'Unathorized');
+        $item = PriceGroup::where("id", $id)->first()
+             ?? Response::notFound("Record $id not found", true);
 
-        $item = PriceGroup::where("id", $id)->first();
-
-        if(is_null($item)) {
-            return Response::notFound("Price $id not found");
-        }
-
-        if($request->has('title_ru')) {
-            $item->title_ru = $request->title_ru;
-        }
-        if($request->has('title_kk')) {
-            $item->title_kk = $request->title_kk;
-        }
-        if($request->has('title_en')) {
-            $item->title_kk = $request->title_en;
-        }
-
-        if($request->has('index_order')) {
-            $item->index_order = $request->index_order;
-        }
-
-        if(!$item->save()) {
-            return Response::internalServerError("Ops something wrong while saving");
-        }
+        $item->fill( $request->all() );
 
         Cache::forget('price-all-ru');
         Cache::forget('price-all-kk');
 
-        return Response::accepted("Updated");
+        return $item->save()
+            ? Response::accepted("Updated")
+            : Response::internalServerError("Ops something wrong while saving");
     }
 
     public function destroy(string $id)
     {
-        auth('sanctum')->check()
-            ?: abort(401, 'Unathorized');
-
-        $item = PriceGroup::where('id', $id)->first();
-
-        if(is_null($item)) {
-            return Response::notFound("Price group $id not found");
-        }
+        $item = PriceGroup::where('id', $id)->first()
+             ?? Response::notFound("Record $id not found", true);
 
         $item->delete = 1;
-        $item->save();
 
         Cache::forget('price-all-ru');
         Cache::forget('price-all-kk');
 
-        return Response::accepted("Ok, price group $id delete");
+        return $item->save()
+            ? Response::accepted("Record $id deleted")
+            : Response::internalServerError("Ops something wrong while saving");
     }
 
     public function revert(string $id)
     {
-        auth('sanctum')->check()
-            ?: abort(401, 'Unathorized');
-
-        $item = PriceGroup::where('id', $id)->first();
-
-        if(is_null($item)) {
-            return Response::notFound("Price group $id not found");
-        }
+        $item = PriceGroup::where("id", "=", $id)->first()
+             ?? Response::notFound("Record $id not found", true);
 
         $item->delete = 0;
-        $item->save();
 
         Cache::forget('price-all-ru');
         Cache::forget('price-all-kk');
 
-        return Response::accepted("Ok, price group $id revert");
+        return $item->save()
+            ? Response::accepted("Record $id revert")
+            : Response::internalServerError("Ops something wrong while saving");
     }
 }

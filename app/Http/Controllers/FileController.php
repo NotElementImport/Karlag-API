@@ -15,7 +15,7 @@ class FileController extends Controller
     public function index(Request $request)
     {
         auth('sanctum')->check() 
-            ?: abort(401, 'Unauthorized');
+            ?: Response::unauthorized('Unauthorized', true);
        
         $query = File::select();
 
@@ -26,9 +26,9 @@ class FileController extends Controller
         if($request->has('place'))
             $query->where('place', '=', $request->get('place'));
 
-        $items = $query->paginate('15');
+        $items = $query->paginate(15);
 
-        return responseJson([ 
+        return Response::okJSON([ 
             'items' => $items->items(),
             'meta' => [
                 'size'     => $items->total(),
@@ -44,7 +44,7 @@ class FileController extends Controller
 
         $fileManager->batchUploadImages();
 
-        return response()->json(['message' => 'ok'], 201);
+        return Response::created('ok');
     }
 
     public function uploadDocumets(Request $request) {
@@ -52,6 +52,6 @@ class FileController extends Controller
         
         $fileManager->batchUploadDocuments();
 
-        return response()->json(['message' => 'ok'], 201);
+        return Response::created('ok');
     }
 }
