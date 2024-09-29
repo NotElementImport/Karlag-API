@@ -28,6 +28,9 @@ class GalleryController extends Controller
     }
 
     public function store(Request $request) {
+        // phpinfo();
+        // die();
+
         $validate = Validator::make(
             $request->all(),    
             [
