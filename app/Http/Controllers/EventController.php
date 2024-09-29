@@ -61,6 +61,8 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
+        // Validate:
+
         $validate = Validator::make(
             $request->all(),    
             [
@@ -72,10 +74,16 @@ class EventController extends Controller
         if($validate->fails())
             return Response::badRequest($validate->errors()->toArray());
         
-        // Photo:
-        $fileManager = FileSystem::new($request);
+        if(isset($_FILES['photo']))
+            FileSystem::validateFile('photo', 'image/', '10M');
+
+        // Custom Attributes:
 
         $slug = Str::slug($request->title_ru);
+
+        // Files:
+
+        $fileManager = FileSystem::new($request);
 
         // Create Model:
         $event = new Events([
@@ -116,6 +124,7 @@ class EventController extends Controller
             $event->setAttribute('tags', Tags::toString($request->input('tags')));
 
         if(isset($_FILES['photo'])) {
+            FileSystem::validateFile('photo', 'image/', '10M');
             $fileManager = FileSystem::new($request);
             $event->image_id = $fileManager->uploadImage('photo', "post-$slug");
         }

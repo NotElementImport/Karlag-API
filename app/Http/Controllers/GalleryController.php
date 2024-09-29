@@ -55,9 +55,11 @@ class GalleryController extends Controller
             return Response::badRequest($validate->errors()->toArray());
 
         $dir = "gallery/".$request->input('dir');
+
         $fileManager = FileSystem::new($request);
 
         foreach(array_keys($_FILES) as $fileKey) {
+            FileSystem::validateFile($fileKey, 'image/', '10M');
             $fileManager->uploadCustom($fileKey, $dir);
         }
 

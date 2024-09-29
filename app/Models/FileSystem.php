@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Global\Response;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class FileSystem extends File {
     private $request = null;
@@ -17,6 +17,9 @@ class FileSystem extends File {
     private function compress($source, $destination, $quality) {
         $info = \getimagesize($source);
     
+        if(is_bool($info))
+            return false;
+
         $image = null;
         switch($info['mime']) {
             case 'image/jpeg':
@@ -55,6 +58,37 @@ class FileSystem extends File {
             : abort(500, "Error while saving file");
     }
 
+    public static function validateFile($name, $mime = 'image/', $size = '10M') {
+        $fileSize = static::strToSize($size);
+
+        $type = mime_content_type($_FILES[$name]['tmp_name']) ?? '';
+        $size = filesize($_FILES[$name]['tmp_name']) ?? -1;
+
+        if(!str_starts_with($type, $mime))
+            Response::badRequest("$name имеет не поддерживаемый тип данных", true);
+        else if($size == -1 || $size > $fileSize)
+            Response::badRequest("$name больше $size", true);
+    }
+
+    public static function strToSize($val = '10M') {
+        $result = intval(substr($val, 0, -1));
+        $val = strtolower($val);
+
+        switch($val[strlen($val) - 1]) {
+            case 'b':
+                return $result;
+            case 'k':
+                return $result * 1024;
+            case 'm':
+                return $result * 1024 * 1024;
+            case 'g':
+                return $result * 1024 * 1024;
+        }
+        
+        return intval($val);
+    }
+    
+
     public function uploadCustom($name, $dir, $rename = null) {
         $extension = pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION);
         $fileName  = $rename ?? pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME);
@@ -64,7 +98,8 @@ class FileSystem extends File {
             abort(500, "File $name cannot be uploaded in server");
 
         if($this->compress($path, $path, 50)) {
-            unlink($path);
+            if($extension != 'jpg')
+                unlink($path);
             $extension = 'jpg';
         }
 
@@ -78,7 +113,6 @@ class FileSystem extends File {
         $path = base_path("/public/files/$fileName.$extension");
         if(!move_uploaded_file($_FILES[$name]['tmp_name'], $path))
             abort(500, "File $name cannot be uploaded in server");
-
 
         if($this->compress($path, $path, 50)) {
             unlink($path);

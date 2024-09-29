@@ -58,6 +58,8 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
+        // Validate:
+
         $validate = Validator::make(
             $request->all(),    
             [
@@ -69,13 +71,19 @@ class PostController extends Controller
         if($validate->fails())
             return Response::badRequest($validate->errors()->toArray());
 
+        if(isset($_FILES['photo']))
+            FileSystem::validateFile('photo', 'image/', '10M');
+
+        // Custom Attributes:
+
         $slug = Str::slug($request->title_ru);
 
-        // Photo:
+        // Files:
+
         $fileManager = FileSystem::new($request);
 
         // Create Model:
-        /** @var Post */
+
         $post = new Post([
             'author_id' => $request->user()->id,
             'slug' => $slug,
@@ -112,6 +120,7 @@ class PostController extends Controller
             $post->setAttribute('tags', Tags::toString($request->input('tags')));
 
         if(isset($_FILES['photo'])) {
+            FileSystem::validateFile('photo', 'image/', '10M');
             $fileManager = FileSystem::new($request);
             $post->image_id = $fileManager->uploadImage('photo', "post-$slug");
         }
