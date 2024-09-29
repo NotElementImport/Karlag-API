@@ -1303,7 +1303,7 @@
                         "content": {
                             "application/json": {
                                 "example": [
-                                    
+                                    "string"
                                 ]
                             }
                         }

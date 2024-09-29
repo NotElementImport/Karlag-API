@@ -34,7 +34,10 @@ class GalleryController extends Controller
             return Gallery::select(['place'])
                 ->distinct()
                 ->whereLike('place', 'gallery/%')
-                ->get();
+                ->get()
+                ->map(function ($item) {
+                    return str_replace('gallery/', '', $item->place);
+                });
         });
 
         return Response::okJSON($items);
@@ -89,7 +92,7 @@ class GalleryController extends Controller
         }
 
         Cache::forget('gallery-dirs');
-        
+
         return Response::accepted('Files deleted');
     }
 }
