@@ -29,7 +29,7 @@ class PriceGroup extends Model
 
     protected function getTitleAttribute() {
         return $this->{ "title_".Language::capture() } 
-            ?? $this->attributes()['title_ru'];
+            ?? $this->attributes['title_ru'];
     }
 
     // Relations:
