@@ -44,6 +44,23 @@ class PriceGroupController extends Controller
         ]);
     }
 
+    public function show(int $id)
+    {
+        $group = PriceGroupSearch::where('id',  '=', $id)->with('prices')->first()
+            ?? Response::notFound("Record $id not found", true);
+
+        if(isset($item->prices)) {
+            $cortage = [];
+            foreach($group->prices as &$price) {
+                $cortage[Str::slug($price->title_ru)] = $price;
+            }
+            $group->setAttribute('childs', $cortage);
+            $group->makeHidden([ 'prices' ]);
+        }
+
+        return Response::okJSON($group);
+    }
+
     public function batchStore(Request $request) 
     {
         // Create Price Group

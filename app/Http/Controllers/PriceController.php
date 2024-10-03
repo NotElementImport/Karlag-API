@@ -88,7 +88,7 @@ class PriceController extends Controller
         Cache::forget('price-all-ru');
 
         return $price->save()
-            ? Response::created('Created')
+            ? Response::okJSON(['id' => $price->id])
             : Response::internalServerError('Ops something wrong while saving');
     }
 
