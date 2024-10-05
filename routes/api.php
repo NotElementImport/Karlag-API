@@ -8,6 +8,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\PriceGroupController;
 use App\Http\Controllers\RepressedController;
+use App\Http\Controllers\ShortPriceController;
 use App\Http\Middleware\WithToken;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +67,22 @@ Route::prefix('api/v1')->group(function() {
 
         Route::get('', [RepressedController::class, 'index']);
         Route::get('/{slug}', [RepressedController::class, 'show']);
+    });
+
+    // Short Price:
+    Route::prefix('short-price')->group(function() {
+        // With Token:
+        Route::middleware(WithToken::class)->group(function() {
+            Route::get('list', [ShortPriceController::class, 'index']);
+            Route::get('{id}', [ShortPriceController::class, 'show']);
+
+            Route::post('', [ShortPriceController::class, 'store']);
+            Route::delete('{id}', [ShortPriceController::class, 'destroy']);
+            Route::patch('{id}',  [ShortPriceController::class, 'revert']);
+            Route::post('{id}', [ShortPriceController::class, 'update']);
+        });
+
+        Route::get('', [ShortPriceController::class, 'cached']);
     });
 
     // Price:

@@ -86,6 +86,7 @@ class PriceController extends Controller
 
         Cache::forget('price-all-kk');
         Cache::forget('price-all-ru');
+        Cache::forget('price-all-en');
 
         return $price->save()
             ? Response::okJSON(['id' => $price->id])
@@ -105,6 +106,7 @@ class PriceController extends Controller
 
         Cache::forget('price-all-kk');
         Cache::forget('price-all-ru');
+        Cache::forget('price-all-en');
 
         return $price->save()
             ? Response::accepted("Updated")
@@ -121,6 +123,7 @@ class PriceController extends Controller
 
         Cache::forget('price-all-ru');
         Cache::forget('price-all-kk');
+        Cache::forget('price-all-en');
 
         return Response::accepted("Ok, price $id delete");
     }
@@ -135,6 +138,7 @@ class PriceController extends Controller
 
         Cache::forget('price-all-ru');
         Cache::forget('price-all-kk');
+        Cache::forget('price-all-en');
 
         return Response::accepted("Ok, price $id revert");
     }

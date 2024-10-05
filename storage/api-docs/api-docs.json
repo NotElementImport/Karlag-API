@@ -150,7 +150,7 @@
                 "summary": "Получить всё (Для сайта и админки)",
                 "security": [{ "api_key": [] }],
                 "parameters": [
-                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } },
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru", "en" ] } },
                     { "name": "page", "in": "query", "schema": { "default": 0, "type": "string" } },
                     { "name": "perpage", "in": "query", "schema": { "default": 15, "type": "string" } },
                     { "name": "sort", "in": "query", "schema": { "type": "string", "enum": [ "-id", "id", "-created_at", "created_at", "fio", "-fio", "slug", "-slug" ]} },
@@ -235,7 +235,7 @@
                 "summary": "Получить",
                 "description": "Два режима работы: С авторизацией (больше информации), и без авторизации",
                 "parameters": [
-                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } },
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru", "en" ] } },
                     { "name": "slug", "required": true, "description": "Получить статью по slug-у", "in": "path", "schema": { "type": "string"}}
                 ],
                 "responses": {
@@ -357,7 +357,7 @@
                 "description": "Два режима работы: С авторизацией (отключено кэширование), и без авторизации",
                 "security": [{ "api_key": [] }],
                 "parameters": [
-                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } },
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru", "en" ] } },
                     { "name": "page", "in": "query", "schema": { "default": 0, "type": "string" } },
                     { "name": "perpage", "in": "query", "schema": { "default": 15, "type": "string" } },
                     { "name": "sort", "in": "query", "schema": { "type": "string", "enum": [ "-id", "id", "-created_at", "created_at", "title_ru", "-title_ru", "slug", "-slug" ]} },
@@ -449,7 +449,7 @@
                 "summary": "Получить статью",
                 "description": "Два режима работы: С авторизацией (больше информации), и без авторизации",
                 "parameters": [
-                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } },
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru", "en" ] } },
                     { "name": "slug", "required": true, "description": "Получить статью по slug-у", "in": "path", "schema": { "type": "string"}}
                 ],
                 "responses": {
@@ -576,7 +576,7 @@
                 "description": "Два режима работы: С авторизацией Тостая версия, и без авторизации Тонкая версия",
                 "security": [{ "api_key": [] }],
                 "parameters": [
-                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } },
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru", "en" ] } },
                     { "name": "page", "in": "query", "schema": { "default": 0, "type": "string" } },
                     { "name": "perpage", "in": "query", "schema": { "default": 15, "type": "string" } },
                     { "name": "sort", "in": "query", "schema": { "type": "string", "enum": [ "-id", "id", "-created_at", "created_at", "title_ru", "-title_ru", "slug", "-slug" ]} },
@@ -673,7 +673,7 @@
                 "summary": "Получить мероприятие",
                 "description": "Два режима работы: С авторизацией (больше информации), и без авторизации",
                 "parameters": [
-                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } },
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru", "en" ] } },
                     { "name": "slug", "required": true, "description": "Получить статью по slug-у", "in": "path", "schema": { "type": "string"}}
                 ],
                 "responses": {
@@ -797,13 +797,217 @@
                 }
             }
         },
+        "/api/v1/short-price": {
+            "get": {
+                "tags": [ "Короткий прайс-лист" ],
+                "summary": "Список",
+                "parameters": [
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru", "en" ] } }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "example": [{
+                                    "adult": 3000,
+                                    "student": 3000,
+                                    "children": 3000,
+                                    "pensioner": 3000,
+                                    "title": "Тест"
+                                }]
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [ "Короткий прайс-лист" ],
+                "summary": "Создать",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "in": "path", "description": "", "schema": { "type": "number" }, "required": true }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title_ru": { "type": "string" },
+                                    "title_kk": { "type": "string" },
+                                    "title_en": { "type": "string" },
+                                    "adult": { "type": "number" },
+                                    "student": { "type": "number" },
+                                    "children": { "type": "number" },
+                                    "pensioner": { "type": "number" },
+                                    "order_index": { "type": "number" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "id": 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/short-price/list": {
+            "get": {
+                "tags": [ "Короткий прайс-лист" ],
+                "summary": "Админ список",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "in": "query", "name": "page" },
+                    { "in": "query", "name": "perPage" },
+                    { "in": "query", "name": "sort", "schema": { "enum": ["-id", "id", "title_ru", "-title_ru"] } },
+                    { "in": "query", "name": "title", "description": "Поиск" },
+                    { "in": "query", "name": "price", "description": "Поиск" }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "items": [{
+                                        "title_ru": "",
+                                        "title_kk": "",
+                                        "title_en": "",
+                                        "adult": 0,
+                                        "student": 0,
+                                        "children": 0,
+                                        "pensioner": 0,
+                                        "order_index": 0,
+                                        "delete": 0
+                                    }],
+                                    "meta": {
+                                        "size": 0,
+                                        "lastpage": 1,
+                                        "perpage": 15,
+                                        "page": 1
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/short-price/{id}": {
+            "get": {
+                "tags": [ "Короткий прайс-лист" ],
+                "summary": "Один элемент",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "in": "path", "description": "", "schema": { "type": "number" }, "required": true }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Обновить",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Updated"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [ "Короткий прайс-лист" ],
+                "summary": "Обновить",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "in": "path", "description": "", "schema": { "type": "number" }, "required": true }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title_ru": { "type": "string" },
+                                    "title_kk": { "type": "string" },
+                                    "title_en": { "type": "string" },
+                                    "adult": { "type": "number" },
+                                    "student": { "type": "number" },
+                                    "children": { "type": "number" },
+                                    "pensioner": { "type": "number" },
+                                    "order_index": { "type": "number" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Обновить",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Updated"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [ "Короткий прайс-лист" ],
+                "summary": "Архивировать",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "in": "path", "description": "", "schema": { "type": "number" }, "required": true }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Record deleted"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [ "Короткий прайс-лист" ],
+                "summary": "Восстановить",
+                "security": [{ "api_key": [] }],
+                "parameters": [
+                    { "name": "id", "in": "path", "description": "", "schema": { "type": "number" }, "required": true }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "message": "Record revert"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/price-list": {
             "get": {
                 "tags": [ "Прайслист" ],
                 "summary": "Получить Прайслист",
                 "description": "Два режима работы: С авторизацией (отключено кэширование), и без авторизации",
                 "parameters": [
-                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } }
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru", "en" ] } }
                 ],
                 "responses": {
                     "200": {
@@ -837,7 +1041,7 @@
                 "description": "Два режима работы: С авторизацией (отключено кэширование), и без авторизации",
                 "security": [{ "api_key": [] }],
                 "parameters": [
-                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru" ] } }
+                    { "name": "Accept-Language", "in": "header", "required": true, "description": "Язык", "schema": { "enum": [ "kk", "ru", "en" ] } }
                 ],
                 "responses": {
                     "200": {
