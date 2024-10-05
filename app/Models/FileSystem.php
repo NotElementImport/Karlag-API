@@ -115,7 +115,8 @@ class FileSystem extends File {
             abort(500, "File $name cannot be uploaded in server");
 
         if($this->compress($path, $path, 50)) {
-            unlink($path);
+            if($extension != 'jpg')
+                unlink($path);
             $extension = 'jpg';
         }
 
@@ -131,7 +132,8 @@ class FileSystem extends File {
             abort(500, "File $name cannot be uploaded in server");
 
         if($this->compress($path, $path, 50)) {
-            unlink($path);
+            if($extension != 'jpg')
+                unlink($path);
             $extension = 'jpg';
         }
 
@@ -148,7 +150,8 @@ class FileSystem extends File {
                 abort(500, "File $key cannot be uploaded in server");
 
             if($this->compress($path, $path, 50)) {
-                unlink($path);
+                if($extension != 'jpg')
+                    unlink($path);
                 $extension = 'jpg';
             }
 
@@ -166,7 +169,8 @@ class FileSystem extends File {
                 abort(500, "File $key cannot be uploaded in server");
 
             if($this->compress($path, $path, 50)) {
-                unlink($path);
+                if($extension != 'jpg')
+                    unlink($path);
                 $extension = 'jpg';
             }
 
