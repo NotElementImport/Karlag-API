@@ -141,9 +141,18 @@ class FileSystem extends File {
     }
 
     public function batchUploadImages() {
+        $imageSizeLimit = static::strToSize('20M');
+
         foreach($_FILES as $key => $file) {
             $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
             $fileName  = pathinfo($file['name'], PATHINFO_FILENAME);
+
+            $size = filesize($file['tmp_name']) ?? -1;
+            if(is_bool($size))
+                abort(500, "File $key cannot be checked in server");
+
+            if($imageSizeLimit < $size)
+                abort(500, "File $key too big");
 
             $path = base_path("/public/files/$fileName.$extension");
             if(!move_uploaded_file($file['tmp_name'], $path))
@@ -160,9 +169,18 @@ class FileSystem extends File {
     }
 
     public function batchUploadDocuments() {
+        $docSizeLimit = static::strToSize('40M');
+
         foreach($_FILES as $key => $file) {
             $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
             $fileName  = pathinfo($file['name'], PATHINFO_FILENAME);
+
+            $size = filesize($file['tmp_name']) ?? -1;
+            if(is_bool($size))
+                abort(500, "File $key cannot be checked in server");
+
+            if($docSizeLimit < $size)
+                abort(500, "File $key too big");
 
             $path = base_path("/public/files/$fileName.$extension");
             if(!move_uploaded_file($file['tmp_name'], $path))
