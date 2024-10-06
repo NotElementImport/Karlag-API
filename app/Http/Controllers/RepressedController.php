@@ -47,8 +47,8 @@ class RepressedController extends Controller
 
         $post->makeHidden(['id']);
 
-        !auth('sanctum')->check()
-            ?: $post->makeHidden(['content_ru', 'content_kk', 'content_en', 'delete', 'slug', 'updated_at']);
+        if(!auth('sanctum')->check())
+            $post->makeHidden(['content_ru', 'content_kk', 'content_en', 'delete', 'slug', 'updated_at']);
 
         return Response::okJSON($post);
     }

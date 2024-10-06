@@ -53,8 +53,8 @@ class EventController extends Controller
         $event->makeHidden(['id']);
 
         // Thin mode:
-        !auth('sanctum')->check()
-            ?: $event->makeHidden(['title_ru', 'title_kk', 'title_en', 'content_ru', 'content_kk', 'content_en', 'delete', 'slug', 'updated_at']);
+        if(!auth('sanctum')->check())
+            $event->makeHidden(['title_ru', 'title_kk', 'title_en', 'content_ru', 'content_kk', 'content_en', 'delete', 'slug', 'updated_at']);
 
         return Response::okJSON($event);
     }

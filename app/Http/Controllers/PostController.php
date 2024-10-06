@@ -50,8 +50,8 @@ class PostController extends Controller
 
         $post->makeHidden(['id']);
 
-        !auth('sanctum')->check()
-            ?: $post->makeHidden(['title_ru', 'title_kk', 'title_en', 'content_ru', 'content_kk', 'content_en', 'delete', 'slug', 'updated_at']);
+        if(!auth('sanctum')->check())
+            $post->makeHidden(['title_ru', 'title_kk', 'title_en', 'content_ru', 'content_kk', 'content_en', 'delete', 'slug', 'updated_at']);
 
         return Response::okJSON($post);
     }
