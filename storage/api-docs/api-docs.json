@@ -89,7 +89,8 @@
                 "tags": [ "Файловая система" ],
                 "summary": "Documents",
                 "parameters": [
-                    { "name": "perPage", "in": "query", "required": false }
+                    { "name": "perPage", "in": "query", "required": false },
+                    { "name": "place", "in": "query", "required": false, "description": "Тип загрузки", "schema": { "enum": [ "images", "document" ] } }
                 ],
                 "responses": {
                     "200": {
