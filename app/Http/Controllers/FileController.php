@@ -13,9 +13,8 @@ class FileController extends Controller
     {
         auth('sanctum')->check() 
             ?: Response::unauthorized('Unauthorized', true);
-       
-        $query = File::select();
 
+        $query = File::select();
         $query->orderBy('id', 'desc');
 
         if($request->has('name') && $name = $request->get('name'))
@@ -24,6 +23,24 @@ class FileController extends Controller
             $query->where('place', '=', $request->get('place'));
 
         $items = $query->paginate(15);
+
+        return Response::okJSON([ 
+            'items' => $items->items(),
+            'meta' => [
+                'size'     => $items->total(),
+                'lastpage' => $items->lastPage(),
+                'perpage'  => $items->perPage(),
+                'page'     => $items->currentPage()
+            ]
+        ]);
+    }
+
+    public function docs(Request $request)
+    {
+        $query = File::select();
+
+        $query->orderBy('id', 'desc');
+        $items = $query->paginate($request->input('perPage', 15));
 
         return Response::okJSON([ 
             'items' => $items->items(),

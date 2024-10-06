@@ -20,6 +20,7 @@ Route::prefix('api/v1')->group(function() {
 
     // Files:
     Route::prefix('files')->group(function() {
+        Route::get('/documents', [FileController::class, 'docs']);
         // With Token:
         Route::middleware(WithToken::class)->group(function() {
             Route::get('/list', [FileController::class, 'index']);

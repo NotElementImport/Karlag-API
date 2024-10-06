@@ -84,6 +84,54 @@
                 }
             }
         },
+        "/api/v1/files/docs": {
+            "get": {
+                "tags": [ "Файловая система" ],
+                "summary": "Documents",
+                "parameters": [
+                    { "name": "perPage", "in": "query", "required": false }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "items": [
+                                        {
+                                            "id": 0,
+                                            "src": "string",
+                                            "place": "string"
+                                        }
+                                    ],
+                                    "meta": {
+                                        "size": 0,
+                                        "lastpage": 0,
+                                        "perpage": 0,
+                                        "page": 0
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/files/{id}": {
+            "delete": {
+                "security": [{ "api_key": [] }],
+                "tags": [ "Файловая система" ],
+                "summary": "Удалить файл",
+                "parameters": [
+                    { "name": "id", "in": "path" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/v1/files/upload/images": {
             "post": {
                 "security": [{ "api_key": [] }],
