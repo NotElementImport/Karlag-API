@@ -24,6 +24,8 @@ class FileSystem extends File {
         switch($info['mime']) {
             case 'image/jpeg':
                 $image = \imagecreatefromjpeg($source);
+                // $destination = \str_replace(".jpeg", ".webp", $destination);
+                // $destination = \str_replace(".jpg", ".webp", $destination);
                 break;
             case 'image/gif':
                 $image = \imagecreatefromgif($source);
@@ -37,7 +39,9 @@ class FileSystem extends File {
                 return false;
         }
 
-        return \imagejpeg($image, $destination, $quality);
+        $result = \imagejpeg($image, $destination, $quality);
+        \imagedestroy($image);
+        return $result;
     }
 
     private function createRecord($src, $place = 'mixed') {

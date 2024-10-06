@@ -25,6 +25,7 @@ Route::prefix('api/v1')->group(function() {
             Route::get('/list', [FileController::class, 'index']);
             Route::post('/upload/images', [FileController::class, 'uploadImages']);
             Route::post('/upload/documents', [FileController::class, 'uploadDocumets']);
+            Route::delete('/upload/{id}', [FileController::class, 'destroy']);
         });
     });
 

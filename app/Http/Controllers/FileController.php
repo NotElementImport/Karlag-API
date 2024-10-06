@@ -4,11 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\FileSystem;
 use App\Models\File;
-use App\Models\Global\QueryFilter;
 use App\Models\Global\Response;
-use App\Models\Global\Tags;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class FileController extends Controller
 {
@@ -53,5 +50,16 @@ class FileController extends Controller
         $fileManager->batchUploadDocuments();
 
         return Response::created('ok');
+    }
+
+    public function destroy(int $id) {
+        $file = File::find($id)
+            ?? Response::notFound('Record not found');
+
+        if(!unlink(base_path("/public$file->src")))
+            return Response::internalServerError('File not exist');
+
+        $file->delete();
+        return Response::ok('ok');
     }
 }
