@@ -144,7 +144,7 @@ class FileSystem extends File {
         return $this->createRecord("/files/$fileName.$extension", "document");
     }
 
-    public function batchUploadImages() {
+    public function batchUploadImages($place = '') {
         $imageSizeLimit = static::strToSize('20M');
 
         foreach($_FILES as $key => $file) {
@@ -172,7 +172,7 @@ class FileSystem extends File {
         }
     }
 
-    public function batchUploadDocuments() {
+    public function batchUploadDocuments($place = null) {
         $docSizeLimit = static::strToSize('40M');
 
         foreach($_FILES as $key => $file) {
@@ -196,7 +196,11 @@ class FileSystem extends File {
                 $extension = 'jpg';
             }
 
-            $this->createRecord("/files/$fileName.$extension", "document");
+            $place = isset($place)
+                ? "document/$place"
+                : "document";
+
+            $this->createRecord("/files/$fileName.$extension", $place);
         }
     }
 }

@@ -40,6 +40,10 @@ class FileController extends Controller
         $query = File::select();
 
         $query->orderBy('id', 'desc');
+
+        if($request->has('place'))
+            $query->where('place', '=', "document/".$request->get('place'));
+
         $items = $query->paginate($request->input('perPage', 15));
 
         return Response::okJSON([ 
@@ -64,7 +68,9 @@ class FileController extends Controller
     public function uploadDocumets(Request $request) {
         $fileManager = FileSystem::new($request);
         
-        $fileManager->batchUploadDocuments();
+        $fileManager->batchUploadDocuments(
+            $request->input('place', null)
+        );
 
         return Response::created('ok');
     }

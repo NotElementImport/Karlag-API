@@ -172,7 +172,8 @@
                         "multipart/form-data": {
                             "schema": {
                                 "type": "object",
-                                "properties": {
+                                "properties": { 
+                                    "place": { "type": "string" },
                                     "file_1": { "type": "string", "format": "binary" },
                                     "file_2": { "type": "string", "format": "binary" }
                                 }
