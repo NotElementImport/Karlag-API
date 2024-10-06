@@ -101,7 +101,7 @@ class ShortPriceController extends Controller
         $price = ShortPrice::where("id", $id)->first()
               ?? Response::notFound("Record $id not found");
 
-        $price->fill( $request->post() );
+        $price->fill( $request->all() );
 
         Cache::forget('short-price-all-kk');
         Cache::forget('short-price-all-ru');
