@@ -95,13 +95,13 @@ class ShortPriceController extends Controller
             : Response::internalServerError('Ops something wrong while saving');
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
         /** @var Price */
-        $price = ShortPrice::where("id", $id)->first()
+        $price = ShortPrice::where("id", '=', $id)->first()
               ?? Response::notFound("Record $id not found");
 
-        $price->setRawAttributes( $request->all() );
+        $price->fill( $request->all() );
 
         if($request->has('all')) {
             $allPrice = $request->input('all');

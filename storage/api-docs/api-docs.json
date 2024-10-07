@@ -890,7 +890,7 @@
                                     "student": { "type": "number" },
                                     "children": { "type": "number" },
                                     "pensioner": { "type": "number" },
-                                    "order_index": { "type": "number" }
+                                    "index_order": { "type": "number" }
                                 }
                             }
                         }
@@ -934,7 +934,7 @@
                                         "student": 0,
                                         "children": 0,
                                         "pensioner": 0,
-                                        "order_index": 0,
+                                        "index_order": 0,
                                         "delete": 0
                                     }],
                                     "meta": {
@@ -991,7 +991,7 @@
                                     "student": { "type": "number" },
                                     "children": { "type": "number" },
                                     "pensioner": { "type": "number" },
-                                    "order_index": { "type": "number" }
+                                    "index_order": { "type": "number" }
                                 }
                             }
                         }
