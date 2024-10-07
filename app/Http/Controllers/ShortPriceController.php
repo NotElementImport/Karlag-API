@@ -101,7 +101,15 @@ class ShortPriceController extends Controller
         $price = ShortPrice::where("id", $id)->first()
               ?? Response::notFound("Record $id not found");
 
-        $price->fill( $request->all() );
+        $price->setRawAttributes( $request->all() );
+
+        if($request->has('all')) {
+            $allPrice = $request->input('all');
+            $price->setAttribute('adult', $allPrice);
+            $price->setAttribute('student', $allPrice);
+            $price->setAttribute('children', $allPrice);
+            $price->setAttribute('pensioner', $allPrice);
+        }
 
         Cache::forget('short-price-all-kk');
         Cache::forget('short-price-all-ru');
