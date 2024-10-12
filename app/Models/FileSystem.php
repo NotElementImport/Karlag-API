@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Global\Response;
 use Illuminate\Http\Request;
+use Str;
 
 class FileSystem extends File {
     private $request = null;
@@ -24,8 +25,7 @@ class FileSystem extends File {
         switch($info['mime']) {
             case 'image/jpeg':
                 $image = \imagecreatefromjpeg($source);
-                // $destination = \str_replace(".jpeg", ".webp", $destination);
-                // $destination = \str_replace(".jpg", ".webp", $destination);
+                $destination = \str_replace(".jpeg", ".jpg", $destination);
                 break;
             case 'image/gif':
                 $image = \imagecreatefromgif($source);
@@ -92,16 +92,15 @@ class FileSystem extends File {
         return intval($val);
     }
     
-
     public function uploadCustom($name, $dir, $rename = null) {
-        $extension = pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION);
-        $fileName  = $rename ?? pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME);
+        $extension = strtolower(pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION));
+        $fileName  = $rename ?? Str::slug(pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME));
 
         $path = base_path("/public/files/$fileName.$extension");
         if(!move_uploaded_file($_FILES[$name]['tmp_name'], $path))
             abort(500, "File $name cannot be uploaded in server");
 
-        if($this->compress($path, $path, 50)) {
+        if($this->compress($path, $path, 70)) {
             if($extension != 'jpg')
                 unlink($path);
             $extension = 'jpg';
@@ -111,14 +110,14 @@ class FileSystem extends File {
     }
 
     public function uploadImage($name, $rename = null) {
-        $extension = pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION);
-        $fileName  = $rename ?? pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME);
+        $extension = strtolower(pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION));
+        $fileName  = $rename ?? Str::slug(pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME));
 
         $path = base_path("/public/files/$fileName.$extension");
         if(!move_uploaded_file($_FILES[$name]['tmp_name'], $path))
             abort(500, "File $name cannot be uploaded in server");
 
-        if($this->compress($path, $path, 50)) {
+        if($this->compress($path, $path, 70)) {
             if($extension != 'jpg')
                 unlink($path);
             $extension = 'jpg';
@@ -128,14 +127,14 @@ class FileSystem extends File {
     }
 
     public function uploadDocument($name, $rename = null) {
-        $extension = pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION);
-        $fileName  = $rename ?? pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME);
+        $extension = strtolower(pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION));
+        $fileName  = $rename ?? Str::slug(pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME));
 
         $path = base_path("/public/files/$fileName.$extension");
         if(!move_uploaded_file($_FILES[$name]['tmp_name'], $path))
             abort(500, "File $name cannot be uploaded in server");
 
-        if($this->compress($path, $path, 50)) {
+        if($this->compress($path, $path, 70)) {
             if($extension != 'jpg')
                 unlink($path);
             $extension = 'jpg';
@@ -148,8 +147,8 @@ class FileSystem extends File {
         $imageSizeLimit = static::strToSize('20M');
 
         foreach($_FILES as $key => $file) {
-            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-            $fileName  = pathinfo($file['name'], PATHINFO_FILENAME);
+            $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $fileName  = Str::slug(pathinfo($file['name'], PATHINFO_FILENAME));
 
             $size = filesize($file['tmp_name']) ?? -1;
             if(is_bool($size))
@@ -162,7 +161,7 @@ class FileSystem extends File {
             if(!move_uploaded_file($file['tmp_name'], $path))
                 abort(500, "File $key cannot be uploaded in server");
 
-            if($this->compress($path, $path, 50)) {
+            if($this->compress($path, $path, 70)) {
                 if($extension != 'jpg')
                     unlink($path);
                 $extension = 'jpg';
@@ -176,8 +175,8 @@ class FileSystem extends File {
         $docSizeLimit = static::strToSize('40M');
 
         foreach($_FILES as $key => $file) {
-            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-            $fileName  = pathinfo($file['name'], PATHINFO_FILENAME);
+            $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $fileName  = Str::slug(pathinfo($file['name'], PATHINFO_FILENAME));
 
             $size = filesize($file['tmp_name']) ?? -1;
             if(is_bool($size))
@@ -190,7 +189,7 @@ class FileSystem extends File {
             if(!move_uploaded_file($file['tmp_name'], $path))
                 abort(500, "File $key cannot be uploaded in server");
 
-            if($this->compress($path, $path, 50)) {
+            if($this->compress($path, $path, 70)) {
                 if($extension != 'jpg')
                     unlink($path);
                 $extension = 'jpg';
