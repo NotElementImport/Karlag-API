@@ -30,7 +30,7 @@ class EventsSearch extends Events
             $search->where('events.author_id', '=', $params['author_id']);
         if($extended && isset($params['delete']))
             $search->where('events.delete', '=', $params['delete']);
-        else
+        else if(!$extended)
             $search->where('events.delete', '=', 0);
 
         if(isset($params['slug']))

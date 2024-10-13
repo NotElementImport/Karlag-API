@@ -18,7 +18,7 @@ class PostSearch extends Post
             $search->where('posts.author_id', '=', $params['author_id']);
         if($extended && isset($params['delete']))
             $search->where('posts.delete', '=', $params['delete']);
-        else
+        else if(!$extended)
             $search->where('posts.delete', '=', 0);
 
         if(isset($params['slug']))

@@ -118,7 +118,7 @@
                 }
             }
         },
-        "/api/v1/files/{id}": {
+        "/api/v1/files/upload/{id}": {
             "delete": {
                 "security": [{ "api_key": [] }],
                 "tags": [ "Файловая система" ],

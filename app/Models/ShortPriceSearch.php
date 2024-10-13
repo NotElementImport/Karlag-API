@@ -14,7 +14,7 @@ class ShortPriceSearch extends ShortPrice
 
         if(!$thinMode && isset($params['delete']))
             $search->where('short_prices.delete', '=', $params['delete']);
-        else
+        else if(!$thinMode)
             $search->where('short_prices.delete', '=', 0);
 
         if(isset($params['title'])) {

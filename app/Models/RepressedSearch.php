@@ -18,7 +18,7 @@ class RepressedSearch extends Repressed
             $search->where('represseds.author_id', '=', $params['author_id']);
         if($extended && isset($params['delete']))
             $search->where('represseds.delete', '=', $params['delete']);
-        else
+        else if(!$extended)
             $search->where('represseds.delete', '=', 0);
 
         if(isset($params['slug']))
