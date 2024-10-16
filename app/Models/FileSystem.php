@@ -94,7 +94,7 @@ class FileSystem extends File {
     
     public function uploadCustom($name, $dir, $rename = null) {
         $extension = strtolower(pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION));
-        $fileName  = $rename ?? Str::slug(pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME));
+        $fileName  = $rename ?? pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME);
 
         $path = base_path("/public/files/$fileName.$extension");
         if(!move_uploaded_file($_FILES[$name]['tmp_name'], $path))
@@ -111,7 +111,7 @@ class FileSystem extends File {
 
     public function uploadImage($name, $rename = null) {
         $extension = strtolower(pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION));
-        $fileName  = $rename ?? Str::slug(pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME));
+        $fileName  = $rename ?? pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME);
 
         $path = base_path("/public/files/$fileName.$extension");
         if(!move_uploaded_file($_FILES[$name]['tmp_name'], $path))
@@ -128,7 +128,7 @@ class FileSystem extends File {
 
     public function uploadDocument($name, $rename = null) {
         $extension = strtolower(pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION));
-        $fileName  = $rename ?? Str::slug(pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME));
+        $fileName  = $rename ?? pathinfo($_FILES[$name]['name'], PATHINFO_FILENAME);
 
         $path = base_path("/public/files/$fileName.$extension");
         if(!move_uploaded_file($_FILES[$name]['tmp_name'], $path))
@@ -148,7 +148,7 @@ class FileSystem extends File {
 
         foreach($_FILES as $key => $file) {
             $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-            $fileName  = Str::slug(pathinfo($file['name'], PATHINFO_FILENAME));
+            $fileName  = pathinfo($file['name'], PATHINFO_FILENAME);
 
             $size = filesize($file['tmp_name']) ?? -1;
             if(is_bool($size))
