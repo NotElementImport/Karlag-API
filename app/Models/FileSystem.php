@@ -176,7 +176,7 @@ class FileSystem extends File {
 
         foreach($_FILES as $key => $file) {
             $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-            $fileName  = Str::slug(pathinfo($file['name'], PATHINFO_FILENAME));
+            $fileName  = pathinfo($file['name'], PATHINFO_FILENAME);
 
             $size = filesize($file['tmp_name']) ?? -1;
             if(is_bool($size))
