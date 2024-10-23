@@ -16,10 +16,10 @@ class EventsSearch extends Events
         if(isset($params['mode'])) {
             switch($params['mode']) {
                 case "actual":
-                    $search->where(DB::raw(value: 'DATE(`events`.`start_at`)'), '>=', Carbon::now());
+                    $search->where(DB::raw(value: 'DATE(`events`.`start_at`)'), '>=', Carbon::now()->subWeek());
                     break;
                 case "history":
-                    $search->where(DB::raw('DATE(`events`.`start_at`)'), '<', Carbon::now());
+                    $search->where(DB::raw('DATE(`events`.`start_at`)'), '<', Carbon::now()->subWeek());
                     break;
             }
         }

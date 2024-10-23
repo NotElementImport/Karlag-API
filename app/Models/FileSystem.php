@@ -100,7 +100,7 @@ class FileSystem extends File {
         if(!move_uploaded_file($_FILES[$name]['tmp_name'], $path))
             abort(500, "File $name cannot be uploaded in server");
 
-        if($this->compress($path, $path, 70)) {
+        if($this->compress($path, $path, 100)) {
             if($extension != 'jpg')
                 unlink($path);
             $extension = 'jpg';
@@ -116,8 +116,8 @@ class FileSystem extends File {
         $path = base_path("/public/files/$fileName.$extension");
         if(!move_uploaded_file($_FILES[$name]['tmp_name'], $path))
             abort(500, "File $name cannot be uploaded in server");
-
-        if($this->compress($path, $path, 70)) {
+100
+        if($this->compress($path, $path, 100)) {
             if($extension != 'jpg')
                 unlink($path);
             $extension = 'jpg';
@@ -134,7 +134,7 @@ class FileSystem extends File {
         if(!move_uploaded_file($_FILES[$name]['tmp_name'], $path))
             abort(500, "File $name cannot be uploaded in server");
 
-        if($this->compress($path, $path, 70)) {
+        if($this->compress($path, $path, 100)) {
             if($extension != 'jpg')
                 unlink($path);
             $extension = 'jpg';
@@ -161,7 +161,7 @@ class FileSystem extends File {
             if(!move_uploaded_file($file['tmp_name'], $path))
                 abort(500, "File $key cannot be uploaded in server");
 
-            if($this->compress($path, $path, 70)) {
+            if($this->compress($path, $path, 100)) {
                 if($extension != 'jpg')
                     unlink($path);
                 $extension = 'jpg';
