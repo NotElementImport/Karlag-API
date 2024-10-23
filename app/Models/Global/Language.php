@@ -15,7 +15,7 @@ class Language
             if(str_contains($lang, '-'))
                 $lang = strtolower(explode('-', $lang)[0]);
 
-            if($lang != 'ru' || $lang != 'en' || $lang != 'kk')
+            if($lang != 'ru' && $lang != 'en' && $lang != 'kk')
                 $lang = 'ru';
 
             Language::$_capturedLang = $lang;
