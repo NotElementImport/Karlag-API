@@ -23,10 +23,6 @@ class FileSystem extends File {
 
         $image = null;
         switch($info['mime']) {
-            case 'image/jpeg':
-                $image = \imagecreatefromjpeg($source);
-                $destination = \str_replace(".jpeg", ".jpg", $destination);
-                break;
             case 'image/gif':
                 $image = \imagecreatefromgif($source);
                 $destination = \str_replace(".gif", ".jpg", $destination);
