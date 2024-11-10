@@ -42,7 +42,7 @@ class CreateAdmin extends Command
             'password' => Hash::make($password),
         ]);
 
-        echo $password;
+        echo "$password\n";
 
         if($user->save())
             return 0;
