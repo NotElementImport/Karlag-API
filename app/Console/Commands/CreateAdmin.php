@@ -35,13 +35,15 @@ class CreateAdmin extends Command
             ->first()
             ?? new User(compact('email'));
 
+        $password = Str::random(10);
+
         $user->fill([
             'name' => $email,
-            'password' => Hash::make(Str::random(10)),
+            'password' => Hash::make($password),
         ]);
 
         if($user->save())
-            return 0;
+            return "$password";
         return 1;
     }
 }
