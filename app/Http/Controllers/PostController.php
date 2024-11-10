@@ -76,7 +76,7 @@ class PostController extends Controller
 
         // Custom Attributes:
 
-        $slug = Str::slug($request->title_ru);
+        $slug = now()->format("Y-m-d").'-'.Str::slug($request->title_ru);
 
         // Files:
 
@@ -114,7 +114,10 @@ class PostController extends Controller
 
         $post->fill( $request->all() );
 
-        $post->slug = Str::slug($request->title_ru);
+        $post->slug = 
+            date('Y-m-d', strtotime($post->created_at)).
+            '-'.
+            Str::slug($request->title_ru);
 
         if($request->has('tags'))
             $post->setAttribute('tags', Tags::toString($request->input('tags')));

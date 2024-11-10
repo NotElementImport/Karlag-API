@@ -79,7 +79,7 @@ class EventController extends Controller
 
         // Custom Attributes:
 
-        $slug = Str::slug($request->title_ru);
+        $slug = now()->format("Y-m-d").'-'.Str::slug($request->title_ru);
 
         // Files:
 
@@ -118,7 +118,10 @@ class EventController extends Controller
 
         $event->fill( $request->all() );
 
-        $event->slug = Str::slug($event->slug);
+        $event->slug =
+            date('Y-m-d', strtotime($event->created_at)).
+            '-'.
+            Str::slug($event->slug);
 
         if($request->has('tags'))
             $event->setAttribute('tags', Tags::toString($request->input('tags')));

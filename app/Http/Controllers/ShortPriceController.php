@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Global\CacheControl;
 use App\Models\Global\Language;
 use App\Models\Global\Response;
 use App\Models\Global\Tags;
@@ -63,6 +64,8 @@ class ShortPriceController extends Controller
                 'title_ru' => 'required',
             ]);
 
+        CacheControl::clear('short-price-all');
+
         if($validate->fails())
             return Response::badRequest($validate->errors()->toArray());
 
@@ -86,10 +89,6 @@ class ShortPriceController extends Controller
             $price->setAttribute('pensioner', $allPrice);
         }
 
-        Cache::forget('short-price-all-kk');
-        Cache::forget('short-price-all-ru');
-        Cache::forget('short-price-all-en');
-
         return $price->save()
             ? Response::okJSON(['id' => $price->id])
             : Response::internalServerError('Ops something wrong while saving');
@@ -101,6 +100,7 @@ class ShortPriceController extends Controller
         $price = ShortPrice::where("id", '=', $id)->first()
               ?? Response::notFound("Record $id not found");
 
+        CacheControl::clear('short-price-all');
         $price->fill( $request->all() );
 
         if($request->has('all')) {
@@ -110,10 +110,6 @@ class ShortPriceController extends Controller
             $price->setAttribute('children', $allPrice);
             $price->setAttribute('pensioner', $allPrice);
         }
-
-        Cache::forget('short-price-all-kk');
-        Cache::forget('short-price-all-ru');
-        Cache::forget('short-price-all-en');
 
         return $price->save()
             ? Response::accepted("Record updated")
@@ -127,9 +123,7 @@ class ShortPriceController extends Controller
 
         $item->delete = 1;
 
-        Cache::forget('short-price-all-kk');
-        Cache::forget('short-price-all-ru');
-        Cache::forget('short-price-all-en');
+        CacheControl::clear('short-price-all');
 
         return $item->save()
             ? Response::accepted("Record deleted")
@@ -143,9 +137,7 @@ class ShortPriceController extends Controller
 
         $item->delete = 0;
 
-        Cache::forget('short-price-all-kk');
-        Cache::forget('short-price-all-ru');
-        Cache::forget('short-price-all-en');
+        CacheControl::clear('short-price-all');
 
         return $item->save()
             ? Response::accepted("Record reverted")
