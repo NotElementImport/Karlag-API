@@ -59,7 +59,7 @@ class GalleryController extends Controller
         $fileManager = FileSystem::new($request);
 
         foreach(array_keys($_FILES) as $fileKey) {
-            FileSystem::validateFile($fileKey, 'image/', '10M');
+            FileSystem::validateFile($fileKey, 'image/', '25M');
             $fileManager->uploadCustom($fileKey, $dir);
         }
 
