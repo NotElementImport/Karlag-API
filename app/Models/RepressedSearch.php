@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 
 class RepressedSearch extends Repressed
 {
-    public static function search(array $params, bool $extended = false) {
+    public static function  search(array $params, bool $extended = false) {
         $search = static::select();
 
         if($extended)
@@ -25,7 +25,7 @@ class RepressedSearch extends Repressed
             $search->whereLike('represseds.slug', "%$params[slug]%");
 
         if(isset($params['fio'])) {
-            $search->whereLike('represseds.fio', "%$params[fio]%");
+            $search->whereLike('represseds.fio', str_contains($params['fio'], '%') ? $params['fio'] : "%$params[fio]%");
         }
         if(isset($params['content'])) {
             $search->where(function ($query) use(&$params) {
