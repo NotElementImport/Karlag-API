@@ -35,6 +35,13 @@ class RepressedSearch extends Repressed
             });
         }
 
+        if(isset($params['birthday_year_from']) && isset($params['birthday_year_to'])) {
+            $search->whereBetween('birthday_year', [$params['birthday_year_from'], $params['birthday_year_to']]);
+        }
+        else if(isset($params['birthday_year'])) {
+            $search->where('birthday_year', '=', $params['birthday_year']);
+        }
+
         if(isset($params['created_at'])) {
             $date = date_create($params['created_at']);
             $search->whereBetween(

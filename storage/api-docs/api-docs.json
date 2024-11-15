@@ -206,6 +206,8 @@
                     { "name": "sort", "in": "query", "schema": { "type": "string", "enum": [ "-id", "id", "-created_at", "created_at", "fio", "-fio", "slug", "-slug" ]} },
                     { "name": "fio", "in": "query", "description": "Поиск по названию", "schema": { "type": "string" } },
                     { "name": "content", "in": "query", "description": "Поиск по контенту", "schema": { "type": "string" } },
+                    { "name": "birthday_year_from", "in": "query", "description": "Поиск по году рождения [от]", "schema": { "type": "number", "example": "1900" } },
+                    { "name": "birthday_year_to", "in": "query", "description": "Поиск по году рождения [до]", "schema": { "type": "number", "example": "2010" } },
                     { "name": "created_at", "in": "query", "schema": { "type": "string" } }
                 ],
                 "responses": {
