@@ -21,26 +21,26 @@ class EventController extends Controller
     {
         $isAuthorized = auth('sanctum')->check();
         $items = EventsSearch::search($request->all(), $isAuthorized);
-    
+
         // Hidden some items if not admin (Thin mode)
         $filteredItems = !$isAuthorized
             // Site
             ? array_map(function ($item) {
-                if(isset($item->image))
+                if (isset($item->image))
                     $item->image->makeHidden(['id', 'place']);
 
-                return $item->makeHidden([ 'id', 'title_ru', 'title_kk', 'title_en', 'content_ru', 'content_kk', 'content_en', 'delete', 'updated_at', 'image_id' ]);
+                return $item->makeHidden(['id', 'title_ru', 'title_kk', 'title_en', 'content_ru', 'content_kk', 'content_en', 'delete', 'updated_at', 'image_id']);
             }, $items->items())
             // Admin
             : $items->items();
 
-        return Response::okJSON([ 
+        return Response::okJSON([
             'items' => $filteredItems,
             'meta' => [
-                'size'     => $items->total(),
+                'size' => $items->total(),
                 'lastpage' => $items->lastPage(),
-                'perpage'  => $items->perPage(),
-                'page'     => $items->currentPage()
+                'perpage' => $items->perPage(),
+                'page' => $items->currentPage()
             ]
         ]);
     }
@@ -48,12 +48,12 @@ class EventController extends Controller
     public function show(string $slug)
     {
         $event = Events::where('slug', $slug)->with('image')->first()
-              ?? Response::notFound("Record $slug not found", true);
+            ?? Response::notFound("Record $slug not found", true);
 
         $event->makeHidden(['id']);
 
         // Thin mode:
-        if(!auth('sanctum')->check())
+        if (!auth('sanctum')->check())
             $event->makeHidden(['title_ru', 'title_kk', 'title_en', 'content_ru', 'content_kk', 'content_en', 'delete', 'slug', 'updated_at']);
 
         return Response::okJSON($event);
@@ -64,22 +64,23 @@ class EventController extends Controller
         // Validate:
 
         $validate = Validator::make(
-            $request->all(),    
+            $request->all(),
             [
                 'title_ru' => 'required',
                 'start_at' => 'required',
                 'content_ru' => 'required'
-            ]);
+            ]
+        );
 
-        if($validate->fails())
+        if ($validate->fails())
             return Response::badRequest($validate->errors()->toArray());
-        
-        if(isset($_FILES['photo']))
+
+        if (isset($_FILES['photo']))
             FileSystem::validateFile('photo', 'image/', '10M');
 
         // Custom Attributes:
 
-        $slug = now()->format("Y-m-d").'-'.Str::slug($request->title_ru);
+        $slug = now()->format("Y-m-d") . '-' . Str::slug($request->title_ru);
 
         // Files:
 
@@ -100,8 +101,8 @@ class EventController extends Controller
 
             'tags' => Tags::toString($request->get('tags', [])),
 
-            'image_id' => isset($_FILES['photo']) 
-                ? $fileManager->uploadImage('photo', "post-$slug") 
+            'image_id' => isset($_FILES['photo'])
+                ? $fileManager->uploadImage('photo', "post-$slug")
                 : 0 // aka null
         ]);
 
@@ -114,19 +115,20 @@ class EventController extends Controller
     {
         /** @var Events */
         $event = Events::where("slug", $slug)->first()
-              ?? Response::notFound("Record $slug not found", true);
+            ?? Response::notFound("Record $slug not found", true);
 
-        $event->fill( $request->all() );
+        $event->fill($request->all());
 
-        $event->slug =
-            date('Y-m-d', strtotime($event->created_at)).
-            '-'.
-            Str::slug($event->slug);
+        // Custom Attributes:
 
-        if($request->has('tags'))
+        $event->slug = date('Y-m-d', strtotime($event->created_at)) . 
+            '-' . 
+            Str::slug($request->title_ru);
+
+        if ($request->has('tags'))
             $event->setAttribute('tags', Tags::toString($request->input('tags')));
 
-        if(isset($_FILES['photo'])) {
+        if (isset($_FILES['photo'])) {
             FileSystem::validateFile('photo', 'image/', '10M');
             $fileManager = FileSystem::new($request);
             $event->image_id = $fileManager->uploadImage('photo', "post-$slug");
@@ -140,7 +142,7 @@ class EventController extends Controller
     public function destroy(int $id)
     {
         $event = Events::where("id", "=", $id)->first()
-              ?? Response::notFound("Record $id not found", true);
+            ?? Response::notFound("Record $id not found", true);
 
         $event->delete = 1;
 
@@ -152,7 +154,7 @@ class EventController extends Controller
     public function revert(int $id)
     {
         $event = Events::where("id", "=", $id)->first()
-              ?? Response::notFound("Record $id not found", true);
+            ?? Response::notFound("Record $id not found", true);
 
         $event->delete = 0;
 
