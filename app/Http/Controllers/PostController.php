@@ -76,7 +76,12 @@ class PostController extends Controller
 
         // Custom Attributes:
 
-        $slug = now()->format("Y-m-d").'-'.Str::slug($request->title_ru);
+        
+        $slug = Str::slug($request->title_ru);
+
+        if(Post::where('slug', '=', $slug)->exists()) {
+            $slug = now()->format('Y-m-d') . '-' . $slug;
+        }
 
         // Files:
 
@@ -113,11 +118,6 @@ class PostController extends Controller
              ?? Response::notFound("Record $slug not found", true);
 
         $post->fill( $request->all() );
-
-        $post->slug = 
-            date('Y-m-d', strtotime($post->created_at)).
-            '-'.
-            Str::slug($request->title_ru);
 
         if($request->has('tags'))
             $post->setAttribute('tags', Tags::toString($request->input('tags')));
