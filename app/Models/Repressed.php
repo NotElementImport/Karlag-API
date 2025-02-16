@@ -10,6 +10,8 @@ class Repressed extends Model
 {
     use HasFactory;
 
+    protected $guarded = []; 
+
     protected $table = 'represseds';
 
     protected $appends = ['content'];
