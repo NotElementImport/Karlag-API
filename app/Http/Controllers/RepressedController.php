@@ -83,7 +83,8 @@ class RepressedController extends Controller
             'content_en' => $request->get('content_en'),
             'birthday_year' => $birthday,
             'death_year'    => $request->get('death_year'),
-            'delete' => 0
+            'delete' => 0,
+            'source' => $request->get('source', ''),
         ]);
 
         return $post->save()
