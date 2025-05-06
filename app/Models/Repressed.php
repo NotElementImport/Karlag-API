@@ -26,6 +26,7 @@ class Repressed extends Model
         'death_year',
         'author_id',
         'delete',
+        'source'
     ];
 
     protected $hidden = [
